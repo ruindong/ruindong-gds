@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>首页</title>
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/public.css">
+    <link rel="stylesheet" type="text/css" href="css/style_new.css">
+    <!--banner-->
+    <script type="text/javascript" src="js/idangerous.swiper.js"></script>
+    <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="js/base/Main.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="js/template.js"></script>
+
+    <!--banner-ajax-->
+    <script type="text/javascript" src="js/dm/DM_banner.js"></script>
+</head>
+<body>
+    <div class="user_no_login">
+        <img style="display: block" src="/images/banner.png">
+        <div class="bg_f4f4f4"></div><!--分割条-->
+        <div class="used-info">
+            <img src="/images/used_info.png">
+        </div>
+        <div class="bg_f4f4f4"></div><!--分割条-->
+        <p class="conditions">一加入条件一</p>
+        <p class="how-add">适合在校大学生、网红、微商、有线下资源的及美容院、美发店、美甲店、婚纱店等门店合作</p>
+        <!--<div style="width: 100%;height: 2rem"></div>-->
+        <div class="youke-add">
+            <div class="add-button" id="youke-add">立即加入</div>
+        </div>
+    </div>
+    <div id="user-in">
+        <!--banner-->
+        <div id="slideshow" class="slideshow swiper-container">
+            <ul class="items swiper-wrapper" id="banner_img" style="background-color: #f4f4f4">
+                <!--banner ajax-->
+            </ul>
+            <div class="number" id="slidePage"></div>
+        </div>
+        <div class="bg_f4f4f4" style="height: 0.1rem"></div><!--分割条-->
+        <a href="/user/fenxiao_statistical.html">
+            <div class="order-and-earn">
+                <div class="container">
+                    <div class="content">
+                        <p class="f-c-4e4e4e" id="order_month">0</p>
+                        <p class="line-h">当月订单</p>
+                    </div>
+                    <div class="content">
+                        <p class="f-c-ff507f"><span class="f-15">￥</span><span id="earn_month">0.00</span></p>
+                        <p class="line-h">当月收益</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <div class="bg_f4f4f4"></div><!--分割条-->
+        <p class="title">一返点政策查询一</p>
+        <ul class="nav-home">
+            <a href="project.html" target="_self">
+                <li>
+                    <img src="/images/item-check1.png">
+                    <p>查项目</p>
+                </li>
+            </a>
+            <div class="line"></div>
+            <a href="hospital.html" target="_self">
+                <li>
+                    <img src="/images/hospital-check.png">
+                    <p>查医院</p>
+                </li>
+            </a>
+        </ul>
+        <div class="bg_f4f4f4"></div><!--分割条-->
+        <div class="used-info">
+            <img src="/images/used_info.png">
+        </div>
+        <p class="information">欢迎使用东方虹分销平台，您可以在我们的平台选择您所需的整形项目，项目成交后将给你返还一定的佣金</p>
+        <footer></footer>
+    </div>
+</body>
+<script>
+    function banner () {
+        var dm_banner = new DM_banner();
+        DataCenter.getDataAnsyc("banner_img", dm_banner, cbTradeInfo);
+    }
+    // 回调函数
+    function cbTradeInfo(response, showId, machine)
+    {
+        // 如果还需要用到消息处理机展示数据，可以加上这一句
+        DataCenter.afterSuccess(response, showId, machine);
+        showSlide()
+    }
+    function showSlide(){
+        var swiper = $('.swiper-container');
+        var newSwiper = new Swiper('.swiper-container', {
+            pagination: '#slidePage',
+            loop: true,//是否循环
+            grabCursor: true,
+            autoplay: 3000,//延迟时间
+            paginationClickable: true
+        });
+        swiper.find('.swiper-wrapper').show();
+        $(".slideshow .items li").css("display","block");
+    }
+    //图片轮播
+    //获取当前年月时间
+    var code_string = window.location.search.split("code=")[1];
+    var date = new Date;
+    var year = date.getFullYear();
+    var month = date.getMonth()+1;
+    var cookies_op = new cookies_op();//new cookie对象
+    if(!code_string){
+        window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx19f5e6fc018f08f6&redirect_uri=http%3a%2f%2fgds.dfhon.cn%2findex.html&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect"
+    }else{
+        var code = code_string.split("&")[0];
+        get_openid(code);
+    }
+    //通过code获取openid
+    function get_openid(code){
+        $.ajax({
+            type: "get",
+            url:"http://api.dfhon.cn/v3/WeChat.json?action=GetUserInfo&code="+code+"&wechatType=3",
+            dataType:'json',
+            success:function(result){
+                if(result.errcode == "40003"){
+                    window.location.href ="http://gds.dfhon.cn/index.html";
+                    return;
+                }
+                else if(result.errcode == "40001"){
+                    show_public_mask("东方虹提醒","微信授权失败，请稍后再试！");
+                }else{
+                    user_login( result.openid,result.nickname,result.headimgurl,result.sex,result.province);//获取用户信息切判断认证
+                    cookies_op.set("nickname", encodeURI(result.nickname),"no_time");//存贮用户昵称
+                    cookies_op.set("headimgurl", encodeURI(result.headimgurl),"no_time");//存贮用户昵称
+                    cookies_op.set("openid", result.openid,"no_time");//存贮用户openid
+                    cookies_op.set("sex", result.sex,"no_time");//存贮用户性别
+                    cookies_op.set("province", result.province,"no_time");//存贮用户位置
+                }
+            }
+        });
+    }
+    //第一次用户登录
+    function user_login(openid,nickname,user_face,sex,city){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/User.json?action=FXLogin&state=WeiXin&openId="+openid+"&nickName="+nickname+"&userFace="+user_face+"&sex="+sex+"&city="+city+"&kefuAccount=",
+            dataType:'json',
+            success:function(result){
+                if(!result.Success){
+                    show_public_mask("东方虹提醒",result.Msg);
+                }
+                cookies_op.set("userid", result.Data[0].userId,"no_time");//设置用户id(userid)
+                if(result.Data[0].Mobile != ""){
+                    cookies_op.set("Mobile", result.Data[0].Mobile,"no_time");
+                    //var mobile = cookies_op.get("Mobile");
+                }
+                var isCertify = result.Data[0].PAuthStatus;
+                isCertify = parseInt(isCertify);
+                certificate(isCertify,result.Data[0].userId)
+            },
+            error:function(){
+                show_public_mask("东方虹提醒",openid);
+            }
+        });
+    }
+    //取得用户信息后判断是否认证
+    function certificate(isCertify,userid){
+        //0未认证 1 等待认证 2 认证成功 3认证失败
+        //isCertify = 2;
+        if(isCertify == 2){
+            $(".user_no_login").hide();
+            $("#user-in").show();
+            banner ();
+            earn_order(userid,year,month);//顶单收益
+        }else if( isCertify == "" || isCertify == 0 ){
+            $(".user_no_login").show();
+            $("#user-in").hide();
+            $("#youke-add").click(function(){
+                window.location.href = '/personal_certificate.html';
+            });
+        }else if(isCertify == 1){
+            $(".user_no_login").show();
+            $("#user-in").hide();
+            $("#youke-add").html("等待审核");
+        }else {
+            $(".user_no_login").show();
+            $("#user-in").hide();
+            $("#youke-add").html("重新认证");
+            show_public_mask("东方虹提醒","审核不通过，请重新提交审核");
+            $("#youke-add").click(function(){
+                window.location.href = '/personal_certificate.html';
+            });
+        }
+    }
+    //获取用户当月订单数及收益
+    function earn_order(userId,year,month){
+        $.ajax({
+            type: "get",
+            url:"http://api.dfhon.cn/v3/popularize.json?action=GetTotalPopDetailByMonth&userId="+userId+"&year="+year+"&month="+month+"&app_sdk=gds&app_version=1.0.0&app_terminal=pc",
+            dataType:'json',
+            success:function(result){
+                $("#order_month").html(result.TotalOrderCount);//订单
+                $("#earn_month").html(result.TotalCommission.toFixed(2));//收益
+            }
+        });
+    }
+
+
+</script>
+<script src="js/footer.js"></script>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport" />
+    <title>订单信息</title>
+    <link href="/css/goods_css.css" rel="stylesheet" type="text/css" />
+    <!--通用样式-->
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+</head>
+<body class="color_f4">
+    <div class="bg_fff">
+        <div class="order_goods" id="goods_infor">
+            <!--商品信息-->
+        </div>
+        <div class="bg_f4f4f4"></div><!--分割条-->
+        <div class="order_content_middle">
+            <div><span>客&nbsp;户&nbsp;姓&nbsp;名：</span><input type="text" id="name" placeholder="请输入客户姓名"></div>
+            <div><span>客户手机号：</span><input type="number" id="telephone" placeholder="请输入客户手机号"></div>
+            <div style="position: relative">
+                <span class="color_4e">期望到院时间</span>
+                <span id="show_time"></span>
+                <img class="time_icon" src="/images/select-down.png">
+                <input class="select_time" type="datetime-local" id="time">
+                <!--时间选择-->
+            </div>
+            <div class="add_detail">
+                <textarea type="text" id="leave_word" placeholder="订单补充说明"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="footer_order">提交订单<img class="submit_load" src="/images/submit_load.png"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var cookies_op = new cookies_op();//new cookie对象
+    var userId = cookies_op.get("userid");
+    var name,telephone,time,adId,hospitalId,beizhu;
+    var order_flag = false;//下单按钮锁
+    var item_id = window.location.hash.split("#")[1];
+    //选择时间
+    $("#time").change(function(){
+        var show_time = $(this).val();
+        show_time = show_time.replace("T"," ");
+        $("#show_time").html(" : "+show_time);
+        $(".time_icon").attr("src","/images/select-down.png")
+    });
+    order_item(item_id);//项目信息
+    function order_item(item_id){
+        $.ajax({
+            type: "post",
+            url: "http://api.dfhon.cn/v3/Activity.json?action=GetCouponDetail&app_sdk=gds&app_version=1.0.0&app_terminal=pc&id=" + item_id,
+            dataType: 'json',
+            success: function (result) {
+                console.log(result);
+                var  html =    '<div class="order_goods_pic">\
+                                    <img src="'+result.Data[0].ImgUrl2.split(",")[0]+'">\
+                                </div>\
+                                <div class="order_goods_infor">\
+                                    <div class="order_goods_name">'+result.Data[0].Title.substr(0,15)+'</div>\
+                                    <div class="order_goods_hospital">'+result.Data[0].HospitalName+'</div>\
+                                </div>';
+                $("#goods_infor").html(html);
+                adId = result.Data[0].ID;
+                hospitalId = result.Data[0].HospitalId;
+            },
+            error: function () {
+                //alert("error");
+            }
+        });
+    }
+    $(".footer_order").click(function(){
+        if(order_flag){return}
+        order_flag = true;
+        submitForm();
+    });
+    //验证提交
+    function beforeSubmit() {
+        var now_time = Date.parse(new Date());//当前时间（时间戳）
+        name = $("#name").val();//姓名
+        telephone = $("#telephone").val();//手机号
+        time = $("#time").val();//2016-8-5
+        time = time.replace("T"," ");
+        var time_rep = time.replace(/\-/g, '/');//2016/10/5
+        var time_chou = Date.parse(time_rep);//选择的时间转时间戳格式
+        if (name == "") {
+            show_public_mask("东方虹提醒","请输入您客户的姓名");
+            order_flag = false;
+            return false;
+        }
+        if ( telephone == "" || !validatePhoneNum(telephone)) {
+            show_public_mask("东方虹提醒","请输入您客户的手机号");
+            order_flag = false;
+            return false;
+        }
+        if ( time == "" || now_time >= time_chou ) {
+            show_public_mask("东方虹提醒","选择的日期需大于当前时间");
+            order_flag = false;
+            return false;
+        }
+        return true;
+    }
+//信息确认成功准备提交
+    function submitForm() {
+        var isValidated = beforeSubmit();
+        if (isValidated) {
+            //$(".footer_order").text("订单提交中");
+            $(".submit_load").show();
+            beizhu = $("#leave_word").val();//备注信息
+            addorder(adId,hospitalId,userId,name,telephone,time,beizhu)
+        }
+    }
+//    手机号正则验证
+    function validatePhoneNum(PhoneNum) {
+        var reg = /^((13)|(14)|(15)|(17)|(18))\d{9}$/;
+        return reg.test(PhoneNum);
+    }
+    //用户下单
+    function addorder(adId,hospitalId,userId,userName,mobile,ordertime,beizhu){
+        $.ajax({
+            type : "get",
+            url : "http://api.dfhon.cn/v1/Popularize.json?action=AddOrder&app_sdk=gds&app_version=1.0.0&app_terminal=pc&adId="+adId+"&hospitalId="+hospitalId+"&userId="+userId+"&userName="+userName+"&mobile="+mobile+"&orderTime="+ordertime+"&beizhu="+beizhu,
+            dataType : 'json',
+            cache: true,
+            success :function(result){
+                console.log(result);
+                if(result.Success){
+                    $(".footer_order").text(result.Msg);
+                    window.location.href = '/user/order_management.html'
+                }else{
+                    show_public_mask("东方虹提醒",result.Msg);
+                    $(".submit_load").hide();
+                    order_flag = false;
+                }
+            },
+            error : function() {
+                show_public_mask("东方虹提醒","未知错误，请稍后再试试吧");
+                $(".submit_load").hide();
+            }
+        });
+    }
+</script>

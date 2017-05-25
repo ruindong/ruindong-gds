@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>订单管理</title>
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="/js/scroll/css/myScroll.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="/js/base/BounceList.js"></script>
+    <script type="text/javascript" src="/js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="/js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="/js/popup/Popup.js"></script>
+    <!--页面dom-->
+    <script type="text/javascript" src="/js/dm/DM_order.js"></script>
+</head>
+<body>
+<div id="order">
+    <ul class="order-nav">
+        <li class="select" id="total" data="0">全部</li>
+        <li id="no-pay" data="2">已取消</li>
+        <li id="have-pay" data="3">未消费</li>
+        <li id="cancel" data="4">已消费</li>
+    </ul>
+    <div id="order-type">
+
+    </div>
+</div>
+</body>
+<script>
+    //var userid = 182261;
+    //获取userid
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");
+    //userid = 480969;
+    var blMgr;
+    load();
+    function load(){
+        // 弹动区域
+        blMgr = new BounceListMgr("order");
+    }
+    loadOrder(userid,0);
+    $(".order-nav li").each(function(){
+        $(this).click(function(){
+            $(this).addClass("select");
+            $(this).siblings().removeClass("select");
+            var state = $(this).attr("data");
+            loadOrder(userid,state);
+        });
+    });
+    function loadOrder(userid,state){
+        var dm_order = new DM_order();
+        // 如果需要设置参数
+        var  params = {
+            "userId": userid,
+            "state":state,
+            "pageSize":10,
+            "direction":1
+        };
+        dm_order.setParams(params);
+        // 弹动列表
+        blMgr.init("order-type", dm_order );
+    }
+
+</script>
+</html>

@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+<head>
+<title>Sample2 - Get消息回调</title>
+<meta charset="utf-8">
+<meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!--通用样式-->
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<!--弹动列表用到的样式-->
+<link rel="stylesheet" type="text/css" href="js/scroll/css/myScroll.css">
+
+<!--onclick加速-->
+<script type="text/javascript" src="js/zy_Click.js"></script>
+
+<!--Main JS，必须-->
+<script type="text/javascript" src="js/base/Main.js"></script>
+<!-- JQuery，必须-->
+<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+
+<!-- 消息处理基类，JSon交互必须 -->
+<script type="text/javascript" src="js/base/MessageMachine.js"></script>
+<!-- 数据处理中心，JSon交互必须 -->
+<script type="text/javascript" src="js/base/DataCenter.js"></script>
+<!-- Json封装类，JSon交互必须 -->
+<script type="text/javascript" src="js/base/JsonEx.js"></script>
+<!-- 模板，JSon数据展示交互必须 -->
+<script type="text/javascript" src="js/template.js"></script>
+
+<!-- 该页用到的消息处理类，显示商品详情 -->
+<script type="text/javascript" src="js/dm/DM_Commodity.js"></script>
+</head>
+
+<body>
+<script type="text/javascript">  
+    var tradeno;
+
+    $(window).load = load(); 
+
+    // 初始化加载数据
+    function load(){
+      tradeno = "2029045"; // 测试用
+
+      // 加载trade信息
+      loadTradeInfo();
+    }
+
+    // 加载trade信息
+    function loadTradeInfo()
+    {
+      var dm_Commodity = new DM_Commodity();
+      var url = dm_Commodity.url;
+      url += tradeno + ".json";
+
+      dm_Commodity.setUrl(url);
+
+      // 提取数据并更新
+      DataCenter.getDataAnsyc("test", dm_Commodity, cbTradeInfo);
+      //DataCenter.getDataAnsyc("test", dm_Commodity);      
+    }
+    // 回调函数
+    function cbTradeInfo(response, showId, machine)
+    {
+      var data = response.data;
+      if(data)
+      {
+        // 直接更新页面上的几个数据
+        var numberA = data.numberA;
+        var numberB = data.trade.lotteryNo;
+        var targetCode = data.trade.targetCode;
+        var phase = data.trade.phase;
+
+        if(!numberA)
+        {
+          numberA = "正在努力计算中...";
+        }
+        if(!numberB)
+        {
+          numberB = "正在等待揭晓...";
+        }
+        if(!targetCode)
+        {
+          targetCode = "等待揭晓...";
+        }
+
+        $("#targetCode").html(targetCode);
+        $("#numberA").html("=" + numberA);
+        $("#numberB").html("=" + numberB);
+        $("#phase").html("（第" + phase + "期）");
+      }
+
+      // 如果还需要用到消息处理机展示数据，可以加上这一句
+      //DataCenter.afterSuccess(response, showId, machine); 
+    }    
+</script>    
+
+<div class="main">
+
+  <div id="test"></div>
+
+  <div class="umar-t uinn align-c bc-red">
+    <div class="c-white">幸运号码</div>
+    <div class="umar-t f-big2" id="targetCode"></div>
+  </div>
+  <div class="">
+    <div class="uinn bd-b bc-white">
+      <div class="f-big">计算方式：</div>
+      <div class="umar-t f-normal">[(数值A + 数值B) ÷ 商品所需人次]取余数 + 10000001</div>
+    </div>
+
+    <div class="umar-t uinn bd-b bc-white">  
+      <div class="f-big">数值A：</div>
+      <div class="umar-t f-normal">=截止该商品最后一条美购记录起，往前100条全站参与记录时间之和
+      </div>
+      <div class="umar-t ub ub-fh">
+        <div class="ub-f1 c-important f-big" id="numberA"></div>
+        <div><a id="zhankai" class="c-link zhankai">展开↓</a></div>
+      </div>  
+      <div id="xx_list" class="uinn bc-gray uhide">
+        <div class="ub ub-fh uinn-b bd-b f-normal">
+          <div class="ub-f1">美购时间</div>
+          <div class="c-right">参与用户</div>
+        </div>
+        <div id="join_list" class="uinn-t f-small">
+        </div>      
+      </div>            
+    </div>
+
+    <div class="uinn bd-b bc-white"> 
+      <div class="f-big">数值B：</div>
+      <div class="umar-t fnormal">=最近一期中国福利彩票“老时老彩”的揭晓结果</div>
+      <div class="umar-t ub ub-fh ub-ac">
+        <div class="c-important f-big" id="numberB"></div>
+        <div class="umar-l" id="phase"></div>
+      </div>  
+    </div>
+  </div>
+</div>
+</body>
+</html>

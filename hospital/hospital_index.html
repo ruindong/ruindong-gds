@@ -1,0 +1,102 @@
+<html>
+<head>
+    <meta charset="utf-8" name="viewport"content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>医院详情</title>
+    <!--医院css-->
+    <link rel="stylesheet" type="text/css" href="/css/hospital_css.css">
+    <!--通用样式-->
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="/js/scroll/css/myScroll.css">
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="/js/base/BounceList.js"></script>
+    <script type="text/javascript" src="/js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="/js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="/js/popup/Popup.js"></script>
+    <!--医院商品项目-->
+    <script type="text/javascript" src="/js/dm/DM_juyouhui.js"></script>
+</head>
+<body>
+<div id="main">
+     <div id="hospital-info"></div>
+     <div class="hospitalSite">
+         <p class="list" id="hosp-intro">医院介绍
+             <img class="arrow_right" src="/images/arrow_right.png">
+         </p>
+         <p class="title">一返点政策一</p>
+     </div>
+    <div id="container_list"></div>
+</div>
+</body>
+<script>
+    var hash_content = window.location.hash;//获取链接后#号内容
+    var hospital_id = hash_content.split("#")[1];
+    $.ajax({
+        type: "post",
+        url: "http://api.dfhon.cn/v3/Hospital.json?action=GetHospitalInfo&app_sdk=gds&app_version=1.0.0&app_terminal=pc&hospitalId="+hospital_id,
+        dataType: 'json',
+        success: function (result) {
+            console.log(result);
+            var hosptial_info = '<div id="header">'+
+                                '<img src="'+result.Data[0].HospitalPicture+'">'+
+                                '<p class="p1">'+
+                                '<span>'+result.Data[0].HospitalName+'</span>'+
+                                '<img id="credit-level" width="0.3rem" class="icon" src="/images/v.jpg">'+
+                                '</p>'+
+//                                '<p class="ccc">'+
+//                                '<span>'+result.Data[0].HospitalTitle+'</span>'+
+//                                '</p>'+
+                                '</div>';
+            $("#hospital-info").html(hosptial_info);
+            if( result.Data[0].CreditLevel >= 3){
+                $("#credit-level").show();
+            }
+            load(hospital_id);
+        },
+        error: function () {
+            alert("error");
+        }
+    });
+//医院项目
+    /*window.onload = function(){
+        $("#hosp-intro").click(function(){
+            window.location.href ="hospital_info_new.html#"+hospital_id;
+        });
+    };*/
+    // 初始化加载数据
+    function load(hospital_id)
+    {
+        loadjuyouhui(hospital_id)
+    }
+    function loadjuyouhui(hospital_id){
+        var dm_juyouhui_list = new DM_juyouhui();
+        // 如果需要设置参数
+        var  params = {
+            "hospitalId": hospital_id,
+            "pageSize":10,
+            "direction":1
+        };
+        dm_juyouhui_list.setParams(params);
+        // 弹动区域
+        var blMgr = new BounceListMgr("main");
+        // 弹动列表
+        blMgr.init("container_list", dm_juyouhui_list);
+        $("#hosp-intro").click(function(){
+            window.location.href ="hospital_info_new.html#"+hospital_id;
+        });
+    }
+</script>
+</html>

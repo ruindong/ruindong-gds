@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>我的消息</title>
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="/js/scroll/css/myScroll.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="/js/base/BounceList.js"></script>
+    <script type="text/javascript" src="/js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="/js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="/js/popup/Popup.js"></script>
+    <!--页面dom-->
+    <script type="text/javascript" src="/js/dm/DM_messages_list.js"></script>
+</head>
+<body>
+<div id="message">
+    <div id="message_list"></div>
+</div>
+</body>
+<script>
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");
+//    userid = 182410;
+    var myDate = new Date();
+    var d = new Date();
+    var str = myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+myDate.getDate();
+    //var data = myDate.toLocaleDateString();
+    var hour = myDate.getHours();
+    var minute = myDate.getMinutes();
+    var second = myDate.getSeconds();
+    var new_time = str+" "+hour+":"+minute+":"+second;//当前日期；
+    var yesterday = myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+(myDate.getDate()-1)+" "+myDate.getHours()+":"+myDate.getMinutes()+":"+myDate.getSeconds();
+    var timestamp = Date.parse(myDate);//当前时间戳
+    var lastOpenTime = cookies_op.get("new_time");
+    if(!lastOpenTime){
+        cookies_op.set("new_time",yesterday,"no_time");//设置上次查看消息的时间
+        lastOpenTime = yesterday;
+    }
+    window.onload = function(){
+        message_list(userid,lastOpenTime,timestamp);
+    };
+    function message_list(userid ,new_time,timestamp){
+        var dm_message_list = new DM_message_list();
+        // 如果需要设置参数
+        var  params = {
+            "userId": userid,
+            "lastOpenTime":new_time,
+            "rand":timestamp
+        };
+        dm_message_list.setParams(params);
+        DataCenter.getDataAnsyc("message_list", dm_message_list,call_back);
+    }
+    // 回调函数
+    function call_back(response, showId, machine){
+        cookies_op.set("new_time",new_time,"no_time");
+        // 如果还需要用到消息处理机展示数据，可以加上这一句
+        DataCenter.afterSuccess(response, showId, machine);
+    }
+</script>
+</html>

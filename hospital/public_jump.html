@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>医院</title>
+    <!--医院css-->
+    <link rel="stylesheet" type="text/css" href="/css/hospital_css.css">
+    <!--通用样式-->
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="/js/scroll/css/myScroll.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="/js/base/BounceList.js"></script>
+    <script type="text/javascript" src="/js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="/js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="/js/popup/Popup.js"></script>
+    <!--页面dom-->
+    <!--医院评论-->
+    <script type="text/javascript" src="/js/dm/DM_comments.js"></script>
+    <!--医生团队-->
+    <script type="text/javascript" src="/js/dm/DM_doctor_team.js"></script>
+    <!--医院案例-->
+    <script type="text/javascript" src="/js/dm/DM_hospital_anli.js"></script>
+    <!--医院商品项目-->
+    <script type="text/javascript" src="/js/dm/DM_juyouhui.js"></script>
+    <!--商品评论-->
+    <script type="text/javascript" src="/js/dm/DM_goods_comments.js"></script>
+
+
+    <script type="text/javascript" src="/js/public_new.js"></script>
+</head>
+<body>
+<div id="main">
+    <div id="comments" style="display: none"></div>
+    <div id="container"></div>
+</div>
+</body>
+<script>
+    var url = window.location.hash;//获取#的字符串
+    var page = url.split("#")[1].split("=");
+    console.log(page);
+    if(page[0] == "comments"){
+        $("title").html("评价列表");
+        var hospital_id = page[1].split("&")[0];
+        var scroe = page[1].split("&")[1];
+        var evalu_num = page[1].split("&")[2];
+        console.log(scroe+"......"+evalu_num);
+        var comment = '<div id="evaluation-info">' +
+                            '<ul><li><span class="all-score">综合评价 </span><span class="scroe">'+parseFloat(scroe).toFixed(1)+'</span></li>' +
+                                '<li>'+star_calculate(scroe)+'</li>' +
+                                '<li><span class="evalu-num">一共'+evalu_num+'条一</span></li>' +
+                            '</ul>' +
+                        '</div>';
+        $("#comments").show().html(comment);
+        //医院评价列表
+        loadCommentList(hospital_id);
+        function loadCommentList(hospital_id){
+            var dm_comment_list = new DM_comments_list();
+            // 如果需要设置参数
+            var  params = {
+                "hospitalId": hospital_id,
+                "pageSize":10,
+                "direction":1
+            };
+            dm_comment_list.setParams(params);
+            // 弹动区域
+            var blMgr = new BounceListMgr("main");
+            // 弹动列表
+            blMgr.init("container", dm_comment_list);
+        }
+    }
+    else if(page[0] == "doctor"){
+        $("title").html("医生团队");
+        var hospital_id = page[1];
+        //医生团队
+        loadDoctorList(hospital_id);
+
+        function loadDoctorList(hospital_id){
+            var dm_doctor_list = new DM_doctor_team();
+            // 如果需要设置参数
+            var  params = {
+                "hospitalId": hospital_id,
+                "pageSize":20,
+                "direction":1
+            };
+            dm_doctor_list.setParams(params);
+            // 弹动区域
+            DataCenter.getDataAnsyc("container", dm_doctor_list, cbTradeInfo);
+        }
+        // 回调函数
+        function cbTradeInfo(response, showId, machine)
+        {
+            // 如果还需要用到消息处理机展示数据，可以加上这一句
+            console.log(response);
+            DataCenter.afterSuccess(response, showId, machine)
+        }
+    }
+    else if(page[0] == "hospital_anli"){
+        $("title").html("医院案例");
+        var user_id = page[1].split("&")[0];//医院的userid
+        var hospital_id = page[1].split("&")[1];//医院的userid
+        console.log(page);
+        //医院案例
+        hospital_anli(user_id,hospital_id)
+        function hospital_anli(user_id,hospital_id){
+            var dm_anli_list = new DM_hospital_anli();
+            // 如果需要设置参数
+            var  params = {
+                "hospitalId": hospital_id,
+                "userId": user_id,
+                "pageSize":10,
+                "direction":1
+            };
+            dm_anli_list.setParams(params);
+            // 弹动区域
+            var blMgr = new BounceListMgr("main");
+            // 弹动列表
+            blMgr.init("container", dm_anli_list);
+        }
+    }
+    else if(page[0] == "juyouhui"){
+        $("title").html("医院项目");
+        console.log(page);
+        var hospital_id = page[1];
+        //聚优惠
+        loadjuyouhui(hospital_id)
+        function loadjuyouhui(hospital_id){
+            var dm_juyouhui_list = new DM_juyouhui();
+            // 如果需要设置参数
+            var  params = {
+                "hospitalId": hospital_id,
+                "pageSize":10,
+                "direction":1
+            };
+            dm_juyouhui_list.setParams(params);
+            // 弹动区域
+            var blMgr = new BounceListMgr("main");
+            // 弹动列表
+            blMgr.init("container", dm_juyouhui_list);
+        }
+    }
+    else if(page[0] == "good_comments"){
+        $("title").html("评论列表");
+        console.log(page[1]);
+       // var goods_id = page[1];
+        var goods_id = page[1].split("&")[0];
+        var scroe = page[1].split("&")[1];
+        var evalu_num = page[1].split("&")[2];
+        console.log(scroe+"......"+evalu_num);
+        var comment = '<div id="evaluation-info">' +
+                '<ul><li><span class="all-score">综合评价 </span><span class="scroe">'+parseFloat(scroe).toFixed(1)+'</span></li>' +
+                '<li>'+star_calculate(scroe)+'</li>' +
+                '<li><span class="evalu-num">一共'+evalu_num+'条一</span></li>' +
+                '</ul>' +
+                '</div>';
+        $("#comments").html(comment);
+        goods_comments(goods_id);
+        function goods_comments(goods_id){
+            var dm_goods_comments = new DM_goods_comments();
+            // 如果需要设置参数
+            var  params = {
+                "Id": goods_id,
+                "pageSize":10,
+                "direction":1
+            };
+            dm_goods_comments.setParams(params);
+            // 弹动区域
+            var blMgr = new BounceListMgr("main");
+            // 弹动列表
+            blMgr.init("container", dm_goods_comments);
+        }
+    }
+
+</script>
+</html>

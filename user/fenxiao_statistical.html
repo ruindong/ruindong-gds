@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>分销统计</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!--饼型图插件。详情见echarts.js官方文档-->
+    <script type="text/javascript" src="/js/cake/1-6-10.esl.js"></script>
+</head>
+<body>
+<div class="statistical">
+    <span>账户余额</span>
+    <p id="Balance">0.00</p>
+</div>
+<div class="statistical_month">
+    <div class="can-use">
+    <span>当月收益（元）</span>
+    <p id="CurrentMMoney">0.00</p>
+    </div>
+    <div class="not-use">
+        <span>上月收益（元）</span>
+        <p id="LastMMoney">0.00</p>
+    </div>
+</div>
+<div class="time-choose-container">
+    <input type="month" class="statistical-time" id="statistical-time" value="">
+    <!--<img src="/images/time-up-red.png">-->
+    <div class="to-view" id="check-by-month">查询</div>
+</div>
+<div class="bg_f4f4f4"></div><!--分割条-->
+<div class="show-statistical">
+    <p id="fenxiao_info"></p>
+    <div id="main" style="height:4.68rem; width:7.5rem;margin:0 auto;"></div>
+</div>
+<div class="bg_f4f4f4"></div><!--分割条-->
+<a href="/user/returns_detailed.html">
+    <p class="user-class" style="border-bottom: 1px solid#ebebeb">查看订单明细
+        <img class="arrow_right" src="/images/arrow_right.png">
+    </p>
+</a>
+</body>
+<script type="text/javascript" src="/js/cake/cake.js"></script>
+<script>
+    //获取当前年月时间
+    var date = new Date;
+    var year = date.getFullYear();
+    var month = date.getMonth()+1;
+    $(".can-use").click(function(){
+        window.location.href = '/user/month_earnings.html#CurrentM';
+    });
+    $(".not-use").click(function(){
+        window.location.href = '/user/month_earnings.html#LastM';
+    });
+    if(month <= 9){
+        var month = "0"+month;
+    }
+    $("#statistical-time").val(year+"-"+month);
+
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");//取userid缓存
+    //获取账户余额
+    packet(userid);//获取用户钱包信息
+    function packet(userId){
+        $.ajax({
+            url:"http://api.dfhon.cn/v3/popularize.json?action=GetTotalPopDetail&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userId,
+            dataType:'json',
+            success:function(result){
+                console.log(result);
+                $("#Balance").html(result.TotalMoney.toFixed(2));
+                $("#CurrentMMoney").html(result.CurrentMMoney.toFixed(2));
+                $("#LastMMoney").html(result.LastMMoney.toFixed(2));
+            }
+        });
+    }
+    //初始化获取分销饼图表信息
+    GetTotalPopDetailByMonth(userid,year,month);
+    //获取选择时间
+    $("#check-by-month").click(function(){
+        var select_time = $("#statistical-time").val();
+        var year_data = select_time.split("-")[0];
+        var month_data = select_time.split("-")[1];
+        GetTotalPopDetailByMonth(userid,year_data,month_data);
+    });
+//分销统计图表显示
+    function GetTotalPopDetailByMonth(userId,year,month){
+        $.ajax({
+            url:"http://api.dfhon.cn/v3/popularize.json?action=GetTotalPopDetailByMonth&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userId+"&year="+year+"&month="+month,
+            dataType:'json',
+            success:function(result){
+                console.log(this.url);
+                var html = '<span>累计分销：'+result.TotalDealMoney.toFixed(2)+'元</span><span>订单：'+result.TotalOrderCount+'单</span><span>收益：'+result.TotalCommission.toFixed(2)+'元</span>';
+                $("#fenxiao_info").html(html);
+                console.log(result);
+                var num1 = result.DealOrderCount;//已成交
+                var num2 = result.NoDealOrderCount;//为消费
+                var num3 = result.CancleOrderCount;//已取消
+                var array = [ {value:num1, name:'已成交'+num1+'单'},
+                              {value:num2, name:'未消费'+num2+'单'},
+                              {value:num3, name:'已取消'+num3+'单'}];
+                data_array(array);
+            }
+        });
+    }
+
+</script>
+</html>

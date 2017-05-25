@@ -1,0 +1,582 @@
+body{
+    background-color: #ffffff!important;
+}
+.project_select{
+    width: 100%;
+    height: 0.6rem;
+    background-color: #ff503c;
+    padding: 0.2rem 0rem;
+    position: fixed;
+    z-index: 999;
+}
+.select_bar{
+    width: 92%;
+    height: 0.6rem;
+    margin: 0rem auto;
+    background-color: #ffffff;
+    border-radius: 0.6rem;
+    position: relative;
+}
+.select_bar img{
+    width: 0.4rem;
+    margin: 0.1rem 0.3rem;
+}
+.select_bar input{
+    width: 67%;
+    height: 0.6rem;
+    position: absolute;
+    /*top:0.14rem;*/
+    /*line-height: 0.6rem;*/
+}
+.select_bar input::-webkit-input-placeholder{
+    font-size: 0.28rem!important;
+    color: #A4A4A4;
+}
+
+.masking{
+    position: fixed;
+    top: 1rem;
+    left: 0rem;
+    width: 100%;
+    height: 0%;
+    z-index: 99;
+    background-color:rgba(0,0,0,0.4);
+}
+.province{
+    border-bottom: 1px solid#ebebeb;
+}
+.province ,.province-item{
+    width: 100%;
+    height: 0.8rem;
+    background-color: #ffffff;
+    text-align: center;
+    font-size: 0.3rem;
+    line-height: 0.8rem;
+    color: #4e4e4e;
+}
+.select{
+    color: #ff507f;
+}
+.province img{
+    width: 0.3rem;
+}
+.province-content{
+    width: 100%;
+    height: 6rem;
+    display: none;
+    background-color: #ffffff;
+    overflow-y: auto;
+}
+#hospital-body{
+    width: 100%;
+    height: 100%;
+}
+.quality_goods{
+    width: 100%;
+    height: 1rem;
+    font-size: 0.3rem;
+    color: #4e4e4e;
+    text-align: center;
+    line-height: 1rem;
+    border-bottom: 1px solid#ebebeb;
+}
+.recommend_item{
+    width: 92%;
+    height: 2rem;
+    border-bottom: 1px solid#ebebeb;
+    padding: 0.25rem 0rem;
+    margin: 0rem auto;
+}
+.recommend_item .item_pic{
+    float: left;
+    width: 2rem;
+    height: 2rem;
+    overflow-y: hidden;
+}
+.item_content{
+    float: right;
+    width: 66.6%;
+    height: 2rem;
+    font-size: 0.3rem;
+}
+.recommend_item ul li{
+    height: 0.5rem;
+    list-style: none;
+}
+.recommend_item ul li span {
+    line-height: 0.5rem;
+    white-space: nowrap;
+}
+.recommend_item ul li .item_title{
+    font-size: 0.32rem;
+    color: #4e4e4e;
+    white-space: nowrap;
+}
+.recommend_item ul li .item_hos{
+    font-size: 0.28rem;
+    color:#a4a4a4;
+    white-space: nowrap;
+}
+.recommend_item ul li .item_now_price{
+    font-size: 0.28rem;
+    color: #a4a4a4;
+}
+.recommend_item ul li .money{
+    font-size: 0.32rem;
+    color: #ff503c;
+}
+.recommend_item ul li .item_price{
+    font-size: 0.26rem;
+    color:#a4a4a4;
+    text-decoration: line-through;
+}
+.recommend_item ul li .item_order{
+    float: right;
+    font-size: 0.26rem;
+    color:#a4a4a4;
+    margin-right: 0.1rem;
+}
+.recommend_item ul li .item_order m{
+    font-size: 0.26rem;
+    color:#ff507f;
+}
+ .star_num {
+    float: left;
+    width: 0.32rem;
+    margin: 0.1rem 0.1rem 0rem 0.1rem;
+}
+ /*医院详情*/
+.body_bc{
+    padding-bottom: 1rem;
+}
+#header{
+    width: 100%;
+    height: 2.5rem;
+    text-align: center;
+}
+#header img{
+    width: 1.2rem;
+    height: 1.2rem;
+    display: block;
+    margin: 0.25rem auto;
+    border-radius: 100%;
+}
+#header .p1{
+    font-size: 0.34rem;
+    color: #4c4c4c;
+    display: inline-flex;
+}
+#header .p1 img{
+    width: 0.3rem;
+    height: 0.3rem;
+    margin: 0.07rem 0rem 0rem 0.12rem;
+    display: none;
+}
+#doc-level{
+    width: 0.3rem;
+    height: 0.3rem;
+    position: absolute;
+    right: -0.1rem;
+    top: 0.2rem;
+}
+.ccc{
+    margin: 0.2rem;
+    font-size: 0.28rem;
+    color: #a4a4a4;
+}
+.hospitalSite{
+    width: 92%;
+    margin: 0rem 0.3rem;
+    z-index: 999;
+    position: relative;
+}
+.hospitalSite .title {
+    width: 100%;
+    height: 0.8rem;
+    text-align: center;
+    line-height: 0.8rem;
+    font-size: 0.32rem;
+    color: #4e4e4e;
+    background-color: #ffffff;
+    border-top: 1px solid#ebebeb;
+    border-bottom: 1px solid#ebebeb;
+}
+.comment-num{
+    font-size: 0.26rem;
+    float: right;
+}
+.hospitalSite .list{
+    font-size: 0.3rem;
+    color: #4c4c4c;
+    width: 100%;
+    height: 1rem;
+    line-height: 1rem;
+    border-top: 1px solid #ebebeb;
+}
+.list .arrow_right{
+    width: 0.4rem;
+    float: right;
+    margin-top: 0.3rem;
+}
+.doc-item{
+    font-size: 0.3rem;
+    color: #4e4e4e;
+    width: 92%;
+    height: 0.9rem;
+    line-height: 0.9rem;
+    padding: 0rem 0.3rem;
+    border-bottom: 1px solid #ebebeb;
+}
+.doc-item .icon{
+    float: left;
+    width: 0.4rem;
+    margin:  0.25rem 0.1rem 0rem 0rem;
+}
+.total-peo{
+    font-size: 0.28rem;
+    color: #a4a4a4;
+    float: right;
+}
+.parent-pos{
+    position: relative;
+    /*width: 92%;
+    padding: 0rem 4%;*/
+    height: 2rem;
+    border-bottom: 1px solid#ebebeb;
+ }
+.total-peo img{
+    width: 0.4rem;
+    float: right;
+    margin-top:0.25rem;
+}
+.facebox{
+    width: 1.2rem;
+    height: 1.2rem;
+    float: left;
+    margin: 0.4rem 0.3rem 0.4rem 0rem;
+}
+.userFace{
+    width: 1.2rem;
+    height: 1.2rem;
+    float: left;
+    border-radius: 100%;
+}
+.inner{
+    float: left;
+    width: 5.4rem;
+    height: 1.8rem;
+    font-size: 0.28rem;
+    color: #a4a4a4;
+    padding: 0.1rem 0rem;
+}
+.inner .name{
+    font-size: 0.32rem;
+    color: #4e4e4e;
+}
+.inner p{
+    width: 100%;
+    height: 0.6rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    line-height: 0.6rem;
+}
+.hospitalSite ul li{
+    width: 100%;
+    height: 2rem;
+    border-bottom: 1px solid#ebebeb;
+}
+.over-exam{
+    width: 100%;
+    border-bottom: 1px solid#ebebeb;
+}
+.over-exam-item{
+    width: 92%;
+    padding: 0rem 0.3rem;
+    border-bottom: 1px solid#ebebeb;
+    font-size: 0.3rem;
+}
+.imgbox{
+    margin-top: 0.2rem;
+    width: 100%;
+    height: 2.2rem;
+    overflow-y: hidden;
+}
+.imgbox .item-img {
+    width: 2.2rem;
+    height: 2.2rem;
+    float: left;
+    background-position: center;
+    background-size: cover;
+}
+.imgbox .item-img:nth-child(2){
+    margin: 0rem 0.15rem;
+}
+.over-exam p{
+    font-size: 0.3rem;
+}
+.item-txt{
+    color: #4e4e4e;
+    margin: 0.2rem 0rem;
+}
+.item-mark{
+    width: 100%;
+    height: 1rem;
+    line-height: 1rem;
+    font-size: 0.28rem;
+    color: #ff507f;
+    border-top: 1px solid#ebebeb;
+    white-space: nowrap;
+}
+.item-mark img{
+    float: left;
+    width: 0.3rem;
+    margin: 0.3rem 0.2rem;
+}
+.prompt{
+    font-size: 0.29rem;
+    padding: 0rem 0.3rem 0.3rem 0.3rem;
+    color: #a4a4a4;
+    background-color: #f4f4f4;
+}
+.prompt .title{
+    font-size: 0.32rem;
+    color: #4e4e4e;
+    margin-bottom: 0.2rem;
+}
+.hospital-footer{
+    width: 100%;
+    height: 1rem;
+    position: fixed;
+    bottom: 0px;
+    font-size: 0.32rem;
+    text-align: center;
+    line-height: 1rem;
+    background-color: #ffffff;
+}
+.add-attention{
+    float: left;
+    width: 50%;
+    height: 1rem;
+    background-color: #ffffff;
+    display: inline-block;
+}
+.add-attention img{
+    width: 0.4rem;
+    display: inline-block;
+    vertical-align: sub;
+}
+.order-face{
+    float: right;
+    width: 50%;
+    color: #ffffff;
+    background-color: #ff507f;
+}
+.detail_read_more{
+    width: 92%;
+    height: 1rem;
+    margin: 0rem auto;
+    line-height: 1rem;
+    font-size: 0.3rem;
+    color: #a4a4a4;
+}
+.detail_read_more .star_num{
+    float: left;
+    width: 0.32rem;
+    height: 0.32rem;
+    margin: 0.34rem 0.1rem 0rem 0.1rem;
+}
+.detail_read_more .arrow_right {
+    float: right;
+    width: 0.4rem;
+    margin-top: 0.3rem ;
+}
+.detail_read_more .detail_score{
+    font-size: 0.32rem;
+    color: #ff507f;
+    margin: 0.2rem 0.1rem 0rem 0.2rem;
+}
+.detail_read_more .read_more{
+    /*margin: 0rem 0.05rem 0rem 0.65rem;*/
+    float: right;
+}
+.hosptital_address{
+    width: 100%;
+    height: 1.5rem;
+}
+.hosptital_address img{
+    width: 0.5rem;
+    float: left;
+    margin-top: 0.5rem;
+}
+.hosptital_address p{
+    float: left;
+    width: 4.8rem;
+    line-height: 0.42rem;
+    font-size: 0.28rem;
+    color: #4e4e4e;
+    border-right: 1px solid#ebebeb;
+    margin-top: 0.33rem;
+    padding: 0rem 0.2rem;
+}
+.hosptital_address :last-child{
+    float: right;
+    margin-right: 0.2rem;
+}
+/*.hospital_masking{
+    position: fixed;
+    left: 0rem;
+    top: 0rem;
+    width: 100%;
+    height: 100%;
+    display: block;
+}*/
+.hospital-body {
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    color: #4c4c4c;
+    font-size: 0.30rem;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    overflow-y: auto;
+}
+.hospital-body .col{
+    color: #a4a4a4;
+}
+.hospital-intro , .hospital-certif , .business-hours{
+    width:96%;
+    margin: 0px auto;
+    height: 0.8rem;
+    border-bottom: 1px solid#ebebeb;
+    line-height: 0.8rem;
+}
+.hospital-intro{
+    border-bottom: 0px !important;
+}
+.bg_f4f4f4{
+    width: 100%;
+    height: 0.2rem;
+    background-color: #f4f4f4;
+}
+#hospital-content{
+    width:96%;
+    margin: 0px auto;
+    font-size: 0.28rem;
+    color: #4e4e4e;
+}
+/*医院介绍*/
+#container{
+    width: 92%;
+    height: 100%;
+    margin: 0rem auto;
+}
+/*医院的更多评论*/
+#evaluation-info{
+    width: 100%;
+    position: relative;
+    z-index: 999;
+}
+#evaluation-info ul{
+    width: 100%;
+    height:1.8rem;
+    background-color: #ffedeb;
+}
+#evaluation-info ul li{
+    padding: 0rem 2.48rem;
+    height: 0.6rem;
+    text-align: center;
+    line-height: 0.6rem;
+}
+#evaluation-info ul li img{
+    width: 0.4rem;
+    float: left;
+    margin: 0.05rem;
+}
+.all-score{
+    font-size: 0.28rem;
+    color: #4e4e4e;
+}
+.scroe{
+    font-size: 0.32rem;
+    color: #ff507f;
+}
+.evalu-num{
+    font-size: 0.26rem;
+    color: #a4a4a4;
+}
+.discuss_item{
+    width: 100%;
+    /*padding: 0rem 4%;*/
+    padding: 0.2rem 0rem;
+    border-bottom: 1px solid#ebebeb;
+}
+.discuss_item_header{
+    width: 100%;
+    height: 1rem;
+}
+.discuss_item_header .user_photo{
+    float: left;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin: 0.15rem 0.3rem 0rem 0rem ;
+    border-radius: 50%;
+}
+.discuss_item_header .user_name{
+    float: left;
+    width: 5.8rem;
+    font-size: 0.3rem;
+    color: #4e4e4e;
+    margin-top: 0.1rem;
+}
+.discuss_item_header .user_name :last-child{
+    float: right;
+    font-size: 0.26rem;
+    color: #a4a4a4;
+}
+.discuss_star{
+    float: left;
+}
+.discuss_star .star_num{
+    float: left;
+    width: 0.32rem;
+    margin:  0.1rem 0.1rem 0.1rem 0rem
+}
+.discuss_item p{
+    clear: both;
+    width: 100%;
+    font-size: 0.3rem;
+    color: #4e4e4e;
+    line-height: 0.45rem;
+}
+.discuss_item .discuss_pic_group{
+    width: 100%;
+    height: 1.5rem;
+    margin: 0.1rem 0rem;
+    overflow-x: auto;
+}
+.mall_header{
+    width: 100%;
+    height: 1rem;
+    background-color: #ff618c;
+    text-align: center;
+    line-height: 1rem;
+    font-size: 0.32rem;
+    color: #FFFFFF;
+    position: relative;
+}
+.mall_header .arrow_back{
+    width: 0.3rem;
+    float: left;
+    margin-left: 0.3rem;
+    position: absolute;
+    top: 0.25rem;
+}
+.mall_header span{
+    margin-right: 0.3rem;
+    position: absolute;
+    right: 0rem;
+}
+/*更多评论结束*/

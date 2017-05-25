@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>订单明细</title>
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="/js/scroll/css/myScroll.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="/js/base/BounceList.js"></script>
+    <script type="text/javascript" src="/js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="/js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="/js/popup/Popup.js"></script>
+    <!--页面dom-->
+    <script type="text/javascript" src="/js/dm/DM_order_mingxi.js"></script>
+</head>
+<body>
+<div id="mingxi">
+    <div id="insert_mingxi"></div>
+</div>
+</body>
+<script>
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");
+    //userid = 182382;
+    var blMgr;
+    load();
+    function load(){
+        // 弹动区域
+        blMgr = new BounceListMgr("mingxi");
+    }
+    order_mingxi(userid);
+    function order_mingxi(userid){
+        var dm_order_mingxi = new DM_order_mingxi();
+        // 如果需要设置参数
+        var  params = {
+            "userId": userid,
+            "pageSize":20,
+            "direction":1
+        };
+        dm_order_mingxi.setParams(params);
+        // 弹动列表
+        blMgr.init("insert_mingxi", dm_order_mingxi);
+    }
+</script>
+</html>

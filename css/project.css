@@ -1,0 +1,161 @@
+.project_select{
+    width: 100%;
+    height: 0.6rem;
+    background-color: #ff503c;
+    padding: 0.2rem 0rem;
+    position: fixed;
+    z-index: 999;
+}
+.select_bar{
+    width: 92%;
+    height: 0.6rem;
+    margin: 0rem auto;
+    background-color: #ffffff;
+    border-radius: 0.6rem;
+    position: relative;
+}
+.select_bar img{
+    width: 0.4rem;
+    margin: 0.1rem 0.3rem;
+}
+.select_bar input{
+    width: 67%;
+    height: 0.6rem;
+    position: absolute;
+    vertical-align: middle;
+    /*left: 1.44rem;*/
+    /*line-height: 0.6rem;*/
+}
+.select_bar input::-webkit-input-placeholder{
+    font-size: 0.28rem!important;
+    color: #A4A4A4;
+}
+.masking{
+    position: fixed;
+    top: 1.81rem;
+    width: 100%;
+    height: 100%;
+    background-color:rgba(0,0,0,0.4);
+    z-index: 999;
+}
+.query-header{
+    position: fixed;
+    top: 1rem;
+    width: 100%;
+    height: 0.8rem;
+    background-color: #fff;
+    border-bottom: 1px solid#ebebeb;
+    z-index: 999;
+}
+.query-header .fl-w{
+    width: 33%;
+    float: left;
+    height: 0.8rem;
+    background-color: #ffffff;
+    text-align: center;
+    font-size: 0.3rem;
+    line-height: 0.8rem;
+    color: #4c4c4c;
+    border-right: 1px solid#ebebeb;
+}
+.query-header .fl-w img{
+    width: 0.3rem;
+}
+.container{
+    width: 100%;
+    height: 6rem;
+    display: none;
+    background-color: #ffffff;
+    overflow-y: auto;
+    position: absolute;
+}
+.row{
+    width: 100%;
+    height: 0.8rem;
+    text-align: center;
+    font-size: 0.3rem;
+    line-height: 0.8rem;
+    color: #4e4e4e;
+}
+.select{
+    color: #ff507f;
+}
+.container .item{
+    float: left;
+    width: 33%;
+    height: 6rem;
+    background-color: #f4f4f4;
+    overflow-y: auto;
+}
+.container .item-content{
+    float: left;
+    width: 66%;
+    height: 6rem;
+    overflow-y: auto;
+}
+.w50{
+    width: 50%!important;
+    z-index: 999;
+}
+/*项目样式*/
+.recommend_item{
+    width: 92%;
+    height: 2rem;
+    border-bottom: 1px solid#ebebeb;
+    padding: 0.25rem 0rem;
+    margin: 0rem auto;
+}
+.recommend_item .item_pic{
+    float: left;
+    width: 2rem;
+    height: 2rem;
+    overflow-y: hidden;
+}
+.item_content{
+    float: right;
+    width: 66.6%;
+    height: 2rem;
+    font-size: 0.3rem;
+}
+.recommend_item ul li{
+    height: 0.5rem;
+    list-style: none;
+}
+.recommend_item ul li span {
+    line-height: 0.5rem;
+    white-space: nowrap;
+}
+.recommend_item ul li .item_title{
+    font-size: 0.32rem;
+    color: #4e4e4e;
+    white-space: nowrap;
+}
+.recommend_item ul li .item_now_price{
+    font-size: 0.28rem;
+    color: #a4a4a4;
+}
+.recommend_item ul li .money{
+    font-size: 0.32rem;
+    color: #ff503c;
+}
+.recommend_item ul li .item_price{
+    font-size: 0.26rem;
+    color:#a4a4a4;
+    text-decoration: line-through;
+}
+.recommend_item ul li .item_order{
+    float: right;
+    font-size: 0.26rem;
+    color:#a4a4a4;
+    margin-right: 0.1rem;
+}
+.recommend_item ul li .item_order m{
+    font-size: 0.26rem;
+    color:#ff507f;
+}
+#project-area{
+    /*margin-top: 0.8rem;*/
+}
+/*#project-list{
+    margin-top: 0.8rem;
+}*/

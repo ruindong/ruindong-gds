@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>项目</title>
+    <!--项目样式-->
+    <link rel="stylesheet" type="text/css" href="css/project.css">
+    <!--通用样式-->
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="js/scroll/css/myScroll.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="js/template.js"></script>
+    <!--页面dom-->
+    <script type="text/javascript" src="js/dm/DM_project_list.js"></script>
+    <script type="text/javascript" src="js/dm/DM_project_keyword_list.js"></script>
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="js/base/BounceList.js"></script>
+    <script type="text/javascript" src="js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="js/popup/Popup.js"></script>
+</head>
+<body>
+<!--项目搜索条-->
+<div class="project_select">
+    <div class="select_bar">
+        <img src="/images/select.png">
+        <input type="text" class="project_keyword" id="class_keyword" placeholder="请输入要查找的项目名关键字">
+    </div>
+</div>
+<div class="masking">
+    <div class="container" id="area-choose"></div>
+    <div class="container" id="item-choose"></div>
+    <div class="container" id="smart-choose"></div>
+</div>
+<div class="query-header">
+    <div class="fl-w" id="area">
+        <span data="">地区</span>
+        <img src="/images/select-down.png">
+    </div>
+    <div class="fl-w" id="item">
+        <span data="0">项目选择</span>
+        <img src="/images/select-down.png">
+    </div>
+    <div class="fl-w" id="smart">
+        <span data="">智能筛选</span>
+        <img src="/images/select-down.png">
+    </div>
+</div>
+<div id="project-area">
+    <div style="width: 100%;height: 1.8rem"></div>
+    <div id="project-list"></div>
+</div>
+</body>
+<script>
+    var province;
+    var class_id;
+    var orderby = "";
+    var blMgr = new BounceListMgr("project-area");
+    function loadProjectList(area,classId,orderby){
+        var dm_project_list = new DM_project_list();
+        // 如果需要设置参数
+        var  params = {
+            "province": area,
+            "classId":classId,
+            "orderBy":orderby,
+            "couponType":-1,
+            "pageSize":10,
+            "direction":1,
+            "isHot":false
+        };
+        dm_project_list.setParams(params);
+        // 弹动列表
+        blMgr.init("project-list", dm_project_list);
+    }
+    js_init();
+    function  js_init(){
+        $(".masking").hide();
+        localtion();
+        function localtion(){
+            $.ajax({
+                url:"http://api2.dfhon.cn/v3/LBS.json?action=GetProvinceCityByIP&app_sdk=gds&app_version=1.0.0&app_terminal=pc",
+                dataType:'json',
+                success:function(result){
+                    province = result.Data[0].province.replace('省','');
+                    $('#area span').html(province);
+                    $('#area span').attr("data",province);
+                    loadProjectList(province,0,"");
+                    console.log(province)
+                },error : function() {
+                    alert("地区错误");
+                }
+            });
+        }
+        //初始化页面载入全国省份
+        china_province();
+        total_item();
+        $('#smart-choose').html(' <div class="row" classid="">默认排序</div>\
+                                        <div class="row" classid="Commission%2bDESC">佣金最高</div>\
+                                        <div class="row" classid="PreferPrice%2bASC">价格最低</div>');
+        //选择栏点击事件
+        $(".query-header .fl-w").click(function(){
+            var click_id = $(this).attr("id");
+            console.log(click_id);
+            //当前点击的图片箭头显示方向
+            if($(this).children('img').attr('src') == '/images/select-down.png'){
+                $(this).children('img').attr('src','/images/select-up.png');
+                $(".masking").show();
+                if($("#"+click_id+"-choose").hide()){
+                    $("#"+click_id+"-choose").slideToggle("slow");
+                    $("#"+click_id+"-choose").siblings().hide();
+                }
+            }else {
+                $(this).children('img').attr('src','/images/select-down.png');
+                $(".masking").hide();
+                $(".container").hide();
+            }
+            $(this).children('span').toggleClass('select');//点击后文字加上红色
+            $(this).siblings().children('span').removeClass('select');
+            $(this).siblings().children('img').attr('src','/images/select-down.png');
+        });
+    }
+    //页面载入全国省份
+    function china_province(){
+        $.ajax({
+            type : "get",
+            url : "http://api.dfhon.cn/v3/Class.json?action=GetMallProvince&app_sdk=gds&app_version=1.0.0&app_terminal=pc",
+            dataType : 'json',
+            cache: false,
+            success :function(result){
+                console.log(result);
+                var province = '<div class="row" classid="">全国</div>';
+                for ( var i =0;i < result.Data.length ; i++){
+                    province += '<div class="row" classid="'+result.Data[i].Province+'">'+result.Data[i].Province+'</div>'
+                }
+                $('#area-choose').html(province);
+                select_ele("area-choose","area");
+            },
+            error : function() {
+                alert("error");
+            }
+        });
+    }
+    //全国省份点击选中事件
+    //所有项目
+    function total_item(){
+        $.ajax({
+            type : "get",
+            url : "http://api.dfhon.cn/v3/Class.json?action=GetAllClass&app_sdk=gds&app_version=1.0.0&app_terminal=pc",
+            dataType : 'json',
+            cache: false,
+            success :function(result){
+                console.log(result);
+                var project = '<div class="item"><div class="row">全部项目</div><div class="row">热门</div>';
+                for( var i = 1; i < result.Data.length; i++){
+                    project += '<div class="row">'+result.Data[i].ClassName+'</div>'
+                }
+                $("#item-choose").html(project+'</div>');
+                //$('.container').html(project);
+                $(".item .row").click(function(){
+                    var index = $(this).index();//获取当前点击的顺序
+                    $(this).addClass('select');
+                    $(this).siblings().each(function(){
+                        $(this).removeClass('select')
+                    });
+                    $("#item-content").remove();
+                    choose_item(result,index);
+                });
+            },
+            error : function() {
+                alert("error");
+            }
+        });
+    }
+    //具体项目选择
+    function choose_item(result,index){
+        var project_right = "";
+            if(index == 0 ){//选择全部项目
+                var select_name = "全部项目";//获取选中的名字
+                $('#item span').html(select_name);//选择栏加上选中的名字
+                $("#item span").removeClass("select");
+                $("#item img").attr("src","/images/select-down.png");
+                province = $('#area span').attr("data");//获取选择栏地区选择事件的选中参数
+                orderby = $('#smart span').attr("data");//获取选择栏排序选择事件的选中参数
+                loadProjectList(province,0,orderby);
+                $(".masking").hide();
+                if(index == 0){return}
+            }
+            if( index == 1 ){
+                for( var i = 0; i < result.HotClass.length; i++){
+                    project_right += '<div class="row w50" classId="'+result.HotClass[i].PlasticClassId+'">'+result.HotClass[i].ClassName+'</div>'
+                }
+            }else {
+                for( var i = 0; i < result.Data[index-1].SubClass.length; i++){
+                    project_right += '<div class="row w50" classId="'+result.Data[index-1].SubClass[i].PlasticClassId+'">'+result.Data[index-1].SubClass[i].ClassName+'</div>'
+                }
+            }
+        $("#item-choose").append('<div class="item-content" id="item-content">'+project_right+'</div>');
+        select_ele("item-content","item");
+    }
+    select_ele("smart-choose","smart");
+    //点击选中加载列表
+    function  select_ele( area,parent_id){
+        $("#"+area+" .row").click(function(){
+            var class_name = $(this).html();
+            var classid = $(this).attr("classid");
+            $(this).addClass("select");
+            $(this).siblings().removeClass("select");
+            $(".masking").hide();
+            $("#"+parent_id+" span").removeClass("select");
+            $("#"+parent_id+" img").attr("src","/images/select-down.png");
+            $("#"+parent_id+" span").attr("data",classid);
+            $("#"+parent_id+" span").html(class_name);
+            province = $('#area span').attr("data");//获取选择栏地区选择事件的选中参数
+            class_id = $('#item span').attr("data");//获取选择栏项目选择事件的选中参数
+            orderby = $('#smart span').attr("data");//获取选择栏排序选择事件的选中参数
+            if(class_id != 0){
+                $("#class_keyword").val("");
+                keyword = "";
+            }
+            if( keyword != ""){
+                loadProjectkeywordList(keyword,province,orderby);
+            }else {
+                loadProjectList(province,class_id,orderby);
+            }
+        });
+    }
+    var keyword = "";
+    $("#class_keyword").change(function(){
+        keyword = $("#class_keyword").val();//关键字
+        console.log(keyword);
+        loadProjectkeywordList(keyword,province,orderby);
+    });
+    function loadProjectkeywordList(keyword,province,orderby){
+        var dm_project_keyword_list = new DM_project_keyword_list();
+        // 如果需要设置参数
+        var  params = {
+            "keyword":keyword,
+            "province":province,
+            "orderBy":orderby,
+            "pageIndex":1,
+            "pageSize":10
+        };
+        dm_project_keyword_list.setParams(params);
+        // 弹动列表
+        blMgr.init("project-list", dm_project_keyword_list);
+    }
+</script>
+</html>

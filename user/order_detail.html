@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>订单详情</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!--banner-ajax-->
+    <script type="text/javascript" src="/js/dm/DM_order_detail.js"></script>
+</head>
+<body>
+    <div class="masking">
+        <div class="code-container" style="height: 2.7rem">
+            <p>特别提示</p>
+            <p>当前订单取消不可逆，是否确认取消</p>
+            <div class="check c-ff523c" id="no-cancel">取消</div>
+            <div class="check" id="yes-cancel">确定</div>
+        </div>
+    </div>
+    <p class="order-type" id="order_state">未消费</p>
+    <div id="order_detail"></div>
+    <div class="hospital-footer">
+        <div class="add-attention" id="order_tacking">订单跟踪</div>
+        <div class="order-face" id="order">取消订单</div>
+    </div>
+</body>
+<script>
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");//取userid缓存
+    //userid = 182261;
+    var orderid = window.location.hash.split("#")[1];
+    var nickname;
+    window.onload = function(){
+        order_detail(orderid);
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/User.json?action=FXLogin&state=WeiXin&openId="+openid,
+            dataType:'json',
+            success:function(result){
+                nickname = result.Data[0].nickName;
+            }
+        });
+    };
+    //订单详情
+    function order_detail (orderid) {
+        var dm_order_detail = new DM_order_detail();
+        var  params = {
+            "orderId": orderid
+        };
+        dm_order_detail.setParams(params);
+        DataCenter.getDataAnsyc("order_detail", dm_order_detail, cbTradeInfo);
+    }
+    // 回调函数
+    function cbTradeInfo(response, showId, machine)
+    {
+        // 如果还需要用到消息处理机展示数据，可以加上这一句
+        DataCenter.afterSuccess(response, showId, machine);
+    }
+    $("#no-cancel").click(function(){
+        $(".masking").hide();
+    });
+    $("#yes-cancel").click(function(){
+        $(".masking").hide();
+        CancleOrderReturnVisit(userid,orderid)
+    });
+    //取消订单
+    function CancleOrderReturnVisit(userid,orderid){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/Order.json?action=CancleOrder&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userid+"&orderId="+orderid,
+            dataType:'json',
+            success:function(result){
+                console.log(result);
+                window.location.href = '/user/order_management.html'
+            },
+            error : function(result) {
+                console.log(this.url);
+                alert("发送失败，请稍后再试");
+            }
+        });
+        $.ajax({
+            type: "post",
+            url:"http://crm.dfhon.com/Ajax/DisHandler.ashx?action=AddOrderTrack&orderId="+orderid+"&Remark=订单已取消&UserId="+userid+"&UserName="+nickname,
+            dataType:'json',
+            success:function(result){
+                console.log(this.url);
+                console.log(result);
+                GetOrderReturnVisit(orderid);
+                $("#leave_word").val("");
+                replay = false;
+            },
+            error : function(result) {
+                show_public_mask("东方虹提醒","数据异常，返回后再试");
+            }
+        });
+    }
+</script>
+</html>

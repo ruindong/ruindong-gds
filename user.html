@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/user.css">
+    <link rel="stylesheet" type="text/css" href="/css/public.css">
+    <title>个人中心</title>
+    <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="js/base/Main.js"></script>
+    <script src="js/footer.js"></script>
+</head>
+<body>
+<a href="/user/user_info.html">
+    <div class="user-container">
+        <img id="user-face" src="/images/init_userface.jpg">
+        <p id="user-name"></p>
+    </div>
+</a>
+<div class="bg_f4f4f4"></div><!--分割条-->
+<a href="/user/packet.html">
+    <p class="user-class">
+        <img class="icon" src="/images/packet.png">我的钱包
+        <img class="arrow_right" src="/images/arrow_right.png">
+    </p>
+</a>
+<a href="/user/messages.html">
+    <p class="user-class">
+        <img class="icon" src="/images/message.png">我的消息
+        <img class="arrow_right" src="/images/arrow_right.png">
+    </p>
+</a>
+<a href="/user/order_management.html">
+    <p class="user-class">
+        <img class="icon" src="/images/my_order.png">订单管理
+        <img class="arrow_right" src="/images/arrow_right.png">
+    </p>
+</a>
+<a href="/user/fenxiao_statistical.html">
+    <p class="user-class">
+        <img class="icon" src="/images/funxiao_sys.png">分销统计
+        <img class="arrow_right" src="/images/arrow_right.png">
+    </p>
+</a>
+<div class="bg_f4f4f4"></div><!--分割条-->
+<a href="tel:4000529789"><p class="contact-kefu">联系客服：4000529789</p></a>
+<p id="result"></p>
+<footer></footer>
+</body>
+<script>
+    var cookies_op = new cookies_op();
+    var openid = cookies_op.get("openid");
+    var nickname = cookies_op.get("nickname");
+    var headimgurl = cookies_op.get("headimgurl");
+    nickname = decodeURIComponent(nickname);
+    headimgurl = decodeURIComponent(headimgurl);
+    var userid = cookies_op.get("userid");
+    //userInfo();
+    updateUser();
+    function updateUser(){
+        $.ajax({
+            type: "post",
+            url: "http://api.dfhon.cn/v3/User.json?action=UpdateUserInfo&userId="+userid+"&nickname="+nickname+"&userFace="+headimgurl,
+            dataType: 'json',
+            success: function (result) {
+                $("#user-name").html(nickname);
+                $("#user-face").attr("src",headimgurl);
+            },error:function(){
+
+            }
+        })
+    }
+    function userInfo(){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/User.json?action=FXLogin&state=WeiXin&openId="+openid,
+            dataType:'json',
+            success:function(result){
+                //alert(typeof (result.Data[0].nickName))
+//                if(nickname != ""){
+//                    $.ajax({
+//                        type: "post",
+//                        url: "http://api.dfhon.cn/v3/User.json?action=UpdateUserInfo&userId="+userid+"&nickname="+nickname+"&userFace=",
+//                        dataType: 'json',
+//                        success: function (result) {
+//                            userInfo();
+//                        },error:function(){
+//
+//                        }
+//                    })
+//                }
+                $("#user-name").html(result.Data[0].nickName);
+                //$("#user-name").html(nickname);
+                $("#user-face").attr("src",result.Data[0].userFace);
+            }
+        });
+    }
+
+</script>
+</html>

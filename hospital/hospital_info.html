@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <title>医院详情</title>
+    <!--医院css-->
+    <link rel="stylesheet" type="text/css" href="/css/hospital_css.css">
+    <!--通用样式-->
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+
+    <!--弹动列表用到的样式-->
+    <!--<link rel="stylesheet" type="text/css" href="js/scroll/css/myScroll.css">-->
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+    <!--医院信息dom-->
+    <script type="text/javascript" src="/js/dm/DM_hospital_info.js"></script>
+    <script type="text/javascript" src="/js/dm/DM_doctor_team.js"></script>
+    <script type="text/javascript" src="/js/dm/DM_hospital_anli.js"></script>
+    <script type="text/javascript" src="/js/dm/DM_juyouhui.js"></script>
+</head>
+<body>
+<div class="body_bc">
+    <div id="hospital-info"></div>
+    <div class="bg_f4f4f4"></div><!--分割条-->
+    <!--医生团队-->
+    <div id="doctor-team">
+        <a href="/hospital/public_jump.html#doctor_team">
+            <p class="doc-item">
+                <img class="icon" src="../images/ps.png">医生团队
+                <span class="total-peo" id="doc_num"><img class="arrow_right" src="/images/arrow_right.png">
+                </span>
+            </p>
+        </a>
+        <div class="hospitalSite">
+            <ul id="doctor">
+            </ul>
+        </div>
+    </div>
+    <div class="bg_f4f4f4"></div><!--分割条-->
+    <!--医院案例-->
+    <div id="hospital-anli"></div>
+    <!--<div>
+        <a href="">
+            <p class="doc-item">
+                <img class="icon" src="/images/list.jpg">已完成案例
+                <span class="total-peo">result.RecordCount
+                    <img class="arrow_right" src="/images/arrow_right.png">
+                </span>
+            </p>
+        </a>
+        <div id="hospital_anli"></div>
+    </div>-->
+    <!--聚优惠-->
+    <div class="bg_f4f4f4"></div><!--分割条-->
+    <div>
+        <a href="/hospital/public_jump.html#juyouhui">
+            <p class="doc-item">
+                <img class="icon" src="/images/list.jpg">聚优惠
+                <span class="total-peo" id="juyou">
+                    <img class="arrow_right" src="/images/arrow_right.png">
+                </span>
+            </p></a>
+        <div id="juyouhui"></div>
+    </div>
+    <div class="prompt">
+        <p class="title">东方虹提示：</p>
+        <p>医院信息由医院自行提供，内容的真实性、准备性和合法性有信息发布医院负责。如您发现医院页面涉及虚假宣传内容请立即向东方虹网举报！</p>
+    </div>
+</div>
+</body>
+<script>
+    var user_id
+    var hospital_id = window.location.hash.split("#")[1];
+    window.onload = function(){
+        hospital_info(hospital_id);//医院信息
+        doctor_team(hospital_id);//医生团队
+        /*hospital_anli_list(hospital_id);//医院案例*/
+        hosp_or_doc_anli("hospital-anli",user_id,hospital_id,"",3,0);
+        juyouhui(hospital_id)//聚优惠
+    };
+    //医院信息
+    function hospital_info(hospital_id) {
+        var dm_hospital_info = new DM_hospital_info();
+        var  params = {
+            "hospitalId": hospital_id
+        };
+        dm_hospital_info.setParams(params);
+        DataCenter.getDataAnsyc("hospital-info", dm_hospital_info, cbTradeInfo);
+    }
+    // 回调函数
+    function cbTradeInfo(response, showId, machine){
+        //$("#total_comment").attr("href","/hospital/public_jump.html#total_comments&"+hospital_id)
+        console.log("..."+response.Data[0].UserId);
+        user_id = response.Data[0].UserId;//变量
+        // 如果还需要用到消息处理机展示数据，可以加上这一句
+        DataCenter.afterSuccess(response, showId, machine);
+    }
+
+    //医生团队
+    function  doctor_team(hospital_id){
+        var dm_doctor_team = new  DM_doctor_team();
+        var params = {
+            "hospitalId": hospital_id,
+            "pageSize":3,
+        };
+        dm_doctor_team.setParams(params);
+        DataCenter.getDataAnsyc("doctor", dm_doctor_team,doctor_team_back);
+    }
+    // 回调函数
+    function doctor_team_back(response, showId, machine){
+        // 如果还需要用到消息处理机展示数据，可以加上这一句
+        var account = JSON.stringify(response.RecordCount);
+        if(account == ""){ account = 0;}
+        $("#doc_num").prepend("共"+account+"人");//回调取出医生团队人数
+        DataCenter.afterSuccess(response, showId, machine);
+    }
+    //聚优惠
+    function juyouhui(hospital_id){
+        var dm_juyouhui = new  DM_juyouhui();
+        var params = {
+            "hospitalId": hospital_id,
+            "pageSize":3,
+        };
+        dm_juyouhui.setParams(params);
+        DataCenter.getDataAnsyc("juyouhui", dm_juyouhui,call_back);
+    }
+    // 回调函数
+    function call_back(response, showId, machine){
+        // 如果还需要用到消息处理机展示数据，可以加上这一句
+        var account = JSON.stringify(response.RecordCount);
+        if(account == ""){ account = 0;}
+        $("#juyou").prepend("共"+account+"项");//回调取出医生团队人数
+        DataCenter.afterSuccess(response, showId, machine);
+    }
+    /*//案例--使用模板出行问题
+    function hospital_anli_list(hospital_id){
+        var dm_hospital_anli = new DM_hospital_anli();
+        var params = {
+            "userId":5054,
+            "hospitalId": hospital_id,
+            "pageSize":3,
+        };
+        dm_hospital_anli.setParams(params);
+        DataCenter.getDataAnsyc("hospital-anli",dm_hospital_anli,hospi_anli);
+    }
+    function hospi_anli(response, showId, machine){
+        // 如果还需要用到消息处理机展示数据，可以加上这一句
+        /!*var account = JSON.stringify(response.RecordCount);
+        $("#hosp_anli").prepend(account);//回调取出医生团队人数*!/
+        DataCenter.afterSuccess(response, showId, machine);
+    }*/
+    //获取医院/医生案例
+    function hosp_or_doc_anli(dom,userId,hospital_id,doctorId,pageSize,fromId) {//插入的dom位置，医院的userid，医院的hostpitalid,医生的doctorid,每页显示条数pagesize,formid
+        $.ajax({
+            type: "post",
+            url: "http://api.dfhon.cn/v3/Post.json?action=GetMyPostByUserId&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId=" + userId + "&hospitalId=" + hospital_id + "&doctorId=" + doctorId + "&pageSize=" + pageSize + "&fromId=" + fromId + "&direction=1",
+            dataType: 'json',
+            success: function (result) {
+                console.log(this.url);
+                var anli_comtent = "";
+                var anli_num = '<a href="/hospital/public_jump.html#hospital_anli='+userId+'&'+hospital_id+'">' +
+                        '<p class="doc-item">'+
+                        '<img class="icon" src="/images/list.jpg">已完成案例'+
+                        '<span class="total-peo">共'+result.RecordCount+'篇'+
+                        '<img class="arrow_right" src="/images/arrow_right.png">'+
+                        '</span>'+
+                        '</p></a>';
+                for(var i = 0;i <result.Data.length;i++ ){
+                    anli_comtent += '<div class="over-exam">'+
+                                        img_show(result.Data[i].ImgUrl)+
+                                        '<p class="item-txt">'+ result.Data[i].DetailContent.substring(0,45)+'</p>'+
+                                        '<div class="item-mark">'+
+                                        '<img class="icon tag" src="/images/tag.jpg">'+
+                                        '<span>'+lable_name(result.Data[i].Lables)+'</span>'+
+                                        '</div>'+
+                                        '</div>';
+                }
+                $("#"+dom).html(anli_num+anli_comtent);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+    //多个图片链接的字符串通过","切分方法
+    function img_show(img_url){
+        var img_html = '<div class="imgbox">';
+        if(img_url == ""){
+            return "";
+        }
+        var img = img_url.split(",",3);
+        for (var i = 0;i < img.length; i++){
+            img_html += '<img class="item-img" src="'+ img[i]+'">'
+        }
+        return img_html+'</div>';
+    }
+    //LableName标签
+    function lable_name(lable){
+        var lable_name ="";
+        for(var i = 0;i < lable.length ;i++){
+            lable_name +=  lable[i].LableName+' ';
+        }
+        return lable_name
+    }
+</script>
+</html>

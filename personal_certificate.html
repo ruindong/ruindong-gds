@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>个人认证</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <script type="text/javascript" src="/js/base/Upload2.js"></script>
+</head>
+<body>
+<div class="masking">
+    <img id="show_id_card" src="">
+</div>
+<div class="bank-infor">
+    <span>姓&nbsp;&nbsp;&nbsp;名：</span>
+    <input type="text" placeholder="请输入姓名" id="name">
+</div>
+<div class="bank-infor">
+    <span>手机号：</span>
+    <input type="number" class="width-50" placeholder="请输入手机号" id="phone">
+    <span class="pad-top" id="get-code">获取验证码</span>
+</div>
+<div class="bank-infor">
+    <span>验证码：</span>
+    <input type="number" placeholder="请输入验证码" id="code">
+</div>
+<div class="upload-id-card">
+    <div class="card-up" id="card-up"></div>
+    <input class="id-card" type="file" onchange="addFile(this);">
+    <div class="card-down" id="card-down"></div>
+</div>
+<p class="bank-mark">上传说明：为保证审核通过，请使用横屏拍摄身份证，并保持宽高比例约3：2，且照片中文字清楚</p>
+<p class="bank-mark">认证说明：一旦经过个人认证后，后续的绑定银行卡必须是以本人姓名注册的</p>
+<div class="footer_bind">提交认证<img class="submit_load" src="images/submit_load.png"></div>
+</body>
+<script>
+    //获取userid
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");
+    //userid = 182382;
+    var cer_flag = false;//认证按钮锁，初始化为锁定
+    // -----以下为图片处理
+    var aryFile = new  Array(); // 图片文件数组
+    var photo_num = 0; // 已经选择的图片张数
+    var FILE_MAX_SIZE = 6291456; // 暂时限制为6M
+    // 添加一张图片
+    function addFile(fileCompontent){
+        var file = fileCompontent.files[0]; //获取input 选中的文件传给ploadFile方法
+        if(!file || file.type.indexOf("image") == -1){
+            alert("文件不是图片格式");
+            return;
+        }
+        /*if(file.size >= FILE_MAX_SIZE){
+            alert("图片大小不能超过6M");
+            return;
+        }*/
+        if (photo_num >= 2){
+            return;
+        }
+        photo_num++;
+        aryFile.push(file);
+        //预览
+        preview(file, "img-button", photo_num - 1);
+    }
+    // 图片预览
+    function preview(file, id, index){
+        var reader = new FileReader();
+        reader.onload = function (e){
+            if(index == 0){
+                $("#card-up").attr("url",this.result);
+                $("#card-up").css("background-image","url("+this.result+")");
+            }else {
+                $("#card-down").attr("url",this.result);
+                $("#card-down").css("background-image","url("+this.result+")");
+                $(".id-card").remove();
+            }
+        };
+        try{
+            //将文件以Data URL形式读入页面
+            reader.readAsDataURL(file);
+        }catch(err){
+            $toast(err);
+        }
+    }
+    //查看上传的身份证大图
+    $(".upload-id-card div").click(function(){
+        var bg = $(this).attr("url");
+        $(".masking").show();
+        $("#show_id_card").attr("src",bg);
+    });
+    $(".masking").click(function(){
+        $(this).hide();
+    });
+    //获取验证码
+    var getcode = false;
+    var num = 60;
+    var interval;
+    $("#get-code").click(function(){
+        if(getcode){return}
+        var phone = $("#phone").val();//手机号
+        if (phone == "") {
+            //alert("请输入手机号");
+            show_public_mask("东方虹提醒","手机号不能为空哦");
+        }else {
+            getcode = true;
+            $("#get-code").html("60s");
+            phone_code(phone);
+            interval = window.setInterval("last_time(num)",1000);
+        }
+    });
+    //每秒执行一次
+    function last_time(time){
+        num = time-1;
+        $("#get-code").html(num+"s");
+        if(num == 0){
+            $("#get-code").html("获取验证码");
+            num = 60;
+            clearInterval(interval);
+            getcode = false
+        }
+    }
+    //验证提交
+    var real_name,phone,code;
+    $(".footer_bind").click(function(){
+        if(cer_flag){ return }
+        cer_flag = true;
+        name = $("#name").val();//姓名
+        phone = $("#phone").val();//手机号
+        code = $("#code").val();//验证码
+        submitForm();
+    });
+    function beforeSubmit() {
+        if (name == "") {
+            //alert("请输入姓名");
+            show_public_mask("东方虹提醒","姓名不能为空哦");
+            cer_flag = false;
+            return false;
+        }
+        if (phone == "") {
+            //alert("请输入手机号");
+            show_public_mask("东方虹提醒","手机号不能为空哦");
+            cer_flag = false;
+            return false;
+        }
+        if (code == "") {
+            cer_flag = false;
+            //alert("请获取验证码");
+            show_public_mask("东方虹提醒","验证码不能为空哦");
+            return false;
+        }
+        if(photo_num != 2){
+            cer_flag = false;
+            //alert("请上传身份证正反面照片");
+            show_public_mask("东方虹提醒","请上传身份证正反面照片");
+            return false;
+        }
+        return true;
+    }
+    //信息确认成功准备提交
+    function submitForm() {
+        var isValidated = beforeSubmit();
+        if (isValidated) {
+            // 上传图片
+            $(".submit_load").show();
+            Upload.uploadFileMultiple(aryFile, uploadSucess, uploadFailed);
+        }
+    }
+    // 银行卡正则验证
+    function validatePhoneNum(cardNum) {
+        var reg = /^(\d{16}|\d{19})$/;
+        return reg.test(cardNum);
+    }
+    // 上传成功
+    function uploadSucess(picurls)
+    {
+        console.log(picurls);
+        var pic1 = picurls.split(",")[0];
+        var pic2 = picurls.split(",")[1];
+        //获取验证结果
+        upload_certification(userid,name,pic1,pic2,phone,code);
+    }
+    // 上传失败
+    function uploadFailed()
+    {
+        show_public_mask("东方虹提醒","图片上传失败,请检查网络情况，稍后再试");
+        setTimeout("window.location.href = '/index.html'",500);
+    }
+
+    //获取验证码
+    function phone_code(phone){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/MobileMsg.json?action=GetPhoneCode&app_sdk=gds&app_version=1.0.0&app_terminal=pc&mobile="+phone,
+            dataType:'json',
+            success:function(result){
+                //alert("发送成功")
+            },
+            error : function(result) {
+                //alert("发送失败，请稍后再试");
+                show_public_mask("东方虹提醒","获取验证码出错，请稍后再试");
+            }
+        });
+    }
+    //上传认证
+    function upload_certification(userID,realName,pic1,pic2,phoneNum,phoneCode){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v1/Popularize.json?action=ApplyPersonAuth&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userID+"&realName="+realName+"&certifyPhoto1="+pic1+"&certifyPhoto2="+pic2+"&phoneNum="+phoneNum+"&phoneCode="+phoneCode,
+            dataType:'json',
+            success:function(result){
+                if(result.Success){
+                    $(".submit_load").show();
+                    setTimeout("window.location.href = '/index.html'",2000);
+                }else{
+                    $(".submit_load").hide();
+                    show_public_mask("东方虹提醒",result.Msg);
+                    cer_flag = false;
+                    $(".footer_bind").text("提交认证");
+                }
+            },
+            error : function(result) {
+                show_public_mask("东方虹提醒","认证异常，请退出后再试");
+                $(".submit_load").hide();
+            }
+        });
+    }
+</script>
+</html>

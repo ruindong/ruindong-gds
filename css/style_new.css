@@ -1,0 +1,341 @@
+/*游客进入平台*/
+.user_no_login{
+    display: none;
+    position: relative;
+    top: 0rem;
+    left: 0rem;
+    width: 100%;
+    background-color: #ffffff;
+    z-index: 99;
+}
+.conditions{
+    width: 100%;
+    height: 0.9rem;
+    text-align: center;
+    line-height: 0.9rem;
+    font-size: 0.30rem;
+    color: #4e4e4e;
+    background-color: #ffffff;
+}
+.user_no_login .how-add{
+    width: 92%;
+    margin: 0rem auto;
+    font-size: 0.28rem;
+    color: #4e4e4e;
+}
+.youke-add{
+    position: fixed;
+    bottom: 0rem;
+    width: 100%;
+    height: 1rem;
+    background-color: #ff503c;
+    text-align: center;
+    line-height: 1rem;
+    font-size: 0.32rem;
+    color: #FFFFFF;
+}
+.add-button{
+    width: 2.01rem;
+    height: 0.65rem;
+    margin: 0.17rem auto;
+    background-color: #ffffff;
+    line-height: 0.65rem;
+    text-align: center;
+    color: #ff523c;
+    border-radius: 0.65rem;
+}
+#user-in{
+    display: none;
+}
+
+
+.order-and-earn{
+    width: 100%;
+    height: 2.4rem;
+    background-color: #ffffff;
+    margin-top: 0.1rem;
+}
+.container{
+    width: 100%;
+    height: 2.4rem;
+    text-align: center;
+}
+.container .content{
+    width: 50%;
+    float: left;
+    color: #b8b8b8;
+    font-size: 0.28rem;
+    height: 2rem;
+    padding-top: 0.4rem;
+}
+.f-c-ff507f{
+    font-size: 0.65rem;
+    color: #ff523c;
+}
+.f-15{
+    font-size: 0.3rem;
+}
+.f-c-4e4e4e{
+    font-size: 0.65rem;
+    color: #4e4e4e;
+}
+.line-h{
+    line-height: 0.5rem;
+}
+.tixian{
+    float: left;
+    width: 1.65rem;
+    height: 0.65rem;
+    border-radius: 0.65rem;
+    border: 1px solid#ff523c;
+    text-align: center;
+    line-height: 0.65rem;
+    font-size: 0.3rem;
+    color: #ff523c;
+    margin-top: 0.855rem;
+}
+.title{
+    width: 100%;
+    height: 0.8rem;
+    text-align: center;
+    line-height: 0.8rem;
+    font-size: 0.32rem;
+    color: #4e4e4e;
+    background-color: #ffffff;
+}
+.check-content{
+    width: 100%;
+    height: 2.2rem;
+}
+.nav-home {
+    width: 100%;
+    height: 2.5rem;
+}
+.nav-home li{
+    float: left;
+    text-align: center;
+    width: 49%;
+    font-size: 0.3rem;
+    color: #4e4e4e;
+    height: 2.2rem;
+}
+.line{
+    float: left;
+    width: 1%;
+    height: 1.62rem;
+    margin-top: 0.4rem;
+    border-right: 1px solid#ebebeb;
+}
+.nav-home li img {
+    width: 1.3rem!important;
+    margin: 0.3rem 0rem 0.2rem 0rem;
+}
+#earn_month{
+    margin-left: 0.1rem;
+    padding-right: 0.4rem;
+}
+.used-info{
+    /*width: 95%;*/
+    height: 3.4rem;
+    text-align: center;
+    margin: 0rem auto;
+}
+.used-info img{
+    width:100%;
+}
+.info-txt{
+    float: left;
+    width: 1.9rem;
+    background-color: #ffedeb;
+    color: #9c9a99;
+    font-size: 0.28rem;
+    text-align: center;
+    padding: 0.4rem 0.1rem;
+}
+.pad{
+    padding: 0.2rem 0.1rem;
+}
+.information{
+    clear: both;
+    width: 92%;
+    color: #b8b8b8;
+    font-size: 0.28rem;
+    line-height: 0.44rem;
+    padding: 0.3rem 0.3rem 1.3rem 0.3rem;
+    border-top: 1px solid #ebebeb;
+    border-bottom: 1px solid #ebebeb;
+}
+/*下单首页样式*/
+.w-h{
+    clear: both;
+    width: 92%;
+    height: 1rem;
+    margin: 0rem 4%;
+    line-height: 1rem;
+    font-size: 0.32rem;
+    color: #4e4e4e;
+    border-bottom: 1px solid#ebebeb;
+}
+.user_name , .user_phone{
+    width: 68%;
+    height: 0.6rem;
+    color: #4e4e4e;
+    font-size: 0.3rem;
+}
+.w-h input::-webkit-input-placeholder{
+    font-size: 0.3rem;
+    color: #A4A4A4;
+}
+.select_time{
+    width: 100%;
+    height: 1rem;
+    background-color: transparent;
+    position: absolute;
+    top: 0rem;
+    left: 0rem;
+    opacity: 0;
+}
+.time_icon{
+    width: 0.33rem;
+    float: right;
+    margin-top: 0.43rem;
+}
+#beizhu{
+    margin: 0rem auto;
+    font-size: 0.30rem;
+    padding: 4%;
+    width: 92%;
+}
+.masking{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    position: fixed;
+    display: none;
+    z-index: 999;
+}
+.container_content{
+    width: 100%;
+    height: 8rem;
+    display: none;
+    border-bottom: 1px solid#ebebeb;
+    background-color: #ffffff;
+}
+.project_select{
+    width: 100%;
+    height: 0.6rem;
+    background-color: #ff503c;
+    padding: 0.2rem 0rem;
+    position: relative;
+}
+.select_bar{
+    width: 92%;
+    height: 0.6rem;
+    margin: 0rem auto;
+    background-color: #ffffff;
+    border-radius: 0.6rem;
+    position: relative;
+}
+.select_bar img{
+    width: 0.4rem;
+    margin: 0.1rem 0.3rem;
+}
+.select_bar input{
+    width: 67%;
+    font-size: 0.28rem;
+    position: absolute;
+    top: 0.12rem;
+}
+.select_bar input::-webkit-input-placeholder{
+    font-size: 0.28rem!important;
+    color: #A4A4A4;
+}
+.content_list{
+    float: left;
+    width: 28%;
+    height: 7rem;
+    overflow-y: auto;
+    background-color: #f4f4f4;
+}
+.item{
+    float: left;
+    width: 69%;
+    height: 7rem;
+    overflow-y: auto;
+    /*line-height: 6rem;*/
+    padding-left: 2%;
+    font-size: 0.4rem;
+    overflow-x: hidden;
+}
+.nav{
+    width: 100%;
+    height: 0.8rem;
+    line-height: 0.8rem;
+    font-size: 0.3rem;
+    text-align: center;
+    line-height: 0.8rem;
+    color: #4e4e4e;
+}
+.class_name{
+    float: left;
+    /*width: 49%;*/
+    min-width: 45%;
+    height: 0.6rem;
+    padding: 0rem 0.1rem;
+    margin: 1% 1% 1% 0px;
+    line-height: 0.6rem;
+    text-align: center;
+    background-color: #f4f4f4;
+    font-size: 0.28rem;
+    white-space: nowrap;
+    border-radius: 3px;
+}
+.red{
+    background-color: #ff503c;
+}
+.hospital_nav{
+    width: 100%;
+    height: 0.8rem;
+    line-height: 0.8rem;
+    font-size: 0.3rem;
+    text-align: left;
+    line-height: 0.8rem;
+    color: #4e4e4e;
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+.select{
+    color: #ff523c;
+}
+.footer_order{
+    position: fixed;
+    bottom: 0rem;
+    float: right;
+    width: 100%;
+    height: 1rem;
+    background-color: #ff503c;
+    text-align: center;
+    line-height: 1rem;
+    font-size: 0.32rem;
+    color: #FFFFFF;
+}
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+    font-size: 0.32rem;
+    color: #A4A4A4;
+}
+input:-moz-placeholder, textarea:-moz-placeholder {
+    font-size: 0.32rem;
+    color: #A4A4A4;
+}
+input::-moz-placeholder, textarea::-moz-placeholder {
+    font-size: 0.32rem;
+    color: #A4A4A4;
+}
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+    font-size: 0.32rem;
+    color: #A4A4A4;
+}
+/*
+.select_bar input::-webkit-input-placeholder{
+    line-height: 0.6rem;
+}*/

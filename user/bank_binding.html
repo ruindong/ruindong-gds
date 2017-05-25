@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>绑定银行卡</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+</head>
+<body>
+<div class="masking">
+    <div class="code-container">
+        <p>请用手机尾号<span id="phone_last">1235</span>接收验证码</p>
+        <div class="input-code">
+            <input type="number" maxlength="6" placeholder="请输入手机验证码" id="get_card">
+            <!--<div class="get-code" id="get-code">获取</div>-->
+        </div>
+        <div class="check" id="no-bind">取消</div>
+        <div class="check c-ff523c" id="yes-bind">确定</div>
+    </div>
+</div>
+<div class="bank-infor">
+    <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</span><input type="text" placeholder="请输入姓名" id="name" value="">
+</div>
+<div class="bank-infor">
+    <span>开户银行：</span><input type="text" placeholder="请输入开户行" id="bank-name" value="">
+</div>
+<div class="bank-infor">
+    <span>银行卡号：</span><input type="number" placeholder="请输入银行卡号" id="cardNum" value="">
+</div>
+<p class="bank-mark">为保证资金安全，请输入与您身份绑定的银行卡号,本平台不对用户绑定银行卡做验证，若因卡号错误导致资金问题，概不负责</p>
+<div class="footer_bind">立即绑定</div>
+</body>
+<script type="text/javascript">
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");//取userid缓存
+    var phone = cookies_op.get("Mobile");//取手机号缓存
+//    userid =480969;
+//    phone = "15750771215";
+    packet(userid);//获取用户信息
+    //取手机尾号
+    var phone_last = phone.substr(7,4);
+    console.log(phone_last);
+    $("#phone_last").html(phone_last);
+    //提交绑定锁
+    var bind_flag = false;
+    //获取验证码
+    //var getcode = false;
+    var num = 60;
+    var interval;
+    /*$("#get-code").click(function(){
+        if(getcode){return}
+        getcode = true;
+        $("#get-code").html("60s");
+        interval = window.setInterval("last_time(num)",1000);
+        phone_code(phone);//获取验证码
+    });
+    //每秒执行一次
+    function last_time(time){
+        num = time-1;
+        $("#get-code").html(num+"s");
+        if(num == 0){
+            $("#get-code").html("获取");
+            num = 60;
+            clearInterval(interval);
+            getcode = false
+        }
+    }*/
+    //取消绑定
+    $("#no-bind").click(function(){
+       $(".masking").hide();
+        clearInterval(interval);
+    });
+    $("#yes-bind").click(function(){
+        var get_card = $("#get_card").val();
+        if(get_card == ""){
+            alert("请输入验证码");
+            return
+        }
+        if(bind_flag){return}
+        bind_flag = true;
+        card_bind(userid,name,phone,get_card,bank_name,cardNum);//提交绑定
+    });
+    var name,cardNum,bank_name;
+    function beforeSubmit() {
+        name = $("#name").val();//姓名
+        cardNum = $("#cardNum").val();//银行卡号
+        bank_name = $("#bank-name").val();//开户行
+        if (name == "") {
+            alert("请输入姓名");
+            return false;
+        }
+        if (bank_name == "") {
+            alert("请输入开户行");
+            return false;
+        }
+        if (!validatePhoneNum(cardNum)) {//只做银行卡16位和19为验证
+            alert("请16位/19位银行卡号");
+            return false;
+        }
+        return true;
+    }
+    //信息确认成功准备提交
+    function submitForm() {
+        var isValidated = beforeSubmit();
+        if (isValidated) {
+            if(bind_flag){return}
+            $(".masking").show();
+            phone_code(phone);
+        }
+    }
+    //    手机号正则验证
+    function validatePhoneNum(cardNum) {
+        var reg = /^(\d{16}|\d{19})$/;
+        return reg.test(cardNum);
+    }
+    //获取验证码
+    function phone_code(phone){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/MobileMsg.json?action=GetPhoneCode&app_sdk=gds&app_version=1.0.0&app_terminal=pc&mobile="+phone,
+            dataType:'json',
+            success:function(result){
+                //alert("发送成功")
+            },
+            error : function(result) {
+                alert("验证码发送失败，请稍后再试");
+            }
+        });
+    }
+    //银行卡绑定
+    function card_bind(userid,name,phone,get_card,bank,card){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/Popularize.json?action=ApplyAuth&accountType=1&app_sdk=gds&app_version=1.0.0&app_terminal=pc&authType=1&userId="+userid+"&contactMan="+name+"&payee="+name+"&phone="+phone+"&phoneCode="+get_card+"&bank="+bank+"&authAccount="+card,
+            dataType:'json',
+            success:function(result){
+                console.log(result)
+                $(".masking").hide();
+                $(".footer_bind").text("绑定成功");
+                window.location.href ="/user/packet.html";
+            },
+            error : function(result) {
+                alert("error2");
+            }
+        });
+    }
+    //获取用户钱包信息
+    function packet(userId){
+        var timestamp = Date.parse(new Date());
+        $.ajax({
+            url:"http://api.dfhon.cn/v3/Popularize.json?action=GetMyBalance&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userId+"&rand="+timestamp,
+            dataType:'json',
+            success:function(result){
+                console.log(result)
+                var authStatus = result.AuthStatus;
+                if( authStatus == 1 ){
+                    $("#name").val(result.RealName);
+                    $("#bank-name").val(result.Bank);
+                    $("#cardNum").val(result.AuthAccount);
+                    $(".footer_bind").html("解除绑定");
+                    $(".footer_bind").click(function(){
+                        unbind_card(userId)
+                    });
+                }else{
+                    //验证提交
+                    $(".footer_bind").click(function(){
+                        submitForm();
+                    });
+                }
+            }
+        });
+    }
+
+    //解除绑定
+    function unbind_card(userId){
+        $.ajax({
+            url:"http://api.dfhon.cn/v3/Popularize.json?action=UnbindBank&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userId,
+            dataType:'json',
+            success:function(result){
+                window.location.href ="/user/packet.html";
+            }
+        });
+    }
+</script>
+</html>

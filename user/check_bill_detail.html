@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>账单详情</title>
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="/js/scroll/css/myScroll.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="/js/base/BounceList.js"></script>
+    <script type="text/javascript" src="/js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="/js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="/js/popup/Popup.js"></script>
+    <!--页面dom-->
+    <script type="text/javascript" src="/js/dm/DM_tixian_record.js"></script>
+</head>
+<body>
+<div class="masking">
+    <div class="code-container" style="height: 2.7rem">
+        <p>特别提示</p>
+        <p>您是否已核对订单，</p>
+        <div class="check c-ff523c" id="no-cancel">取消</div>
+        <div class="check" id="yes-cancel">确定</div>
+    </div>
+</div>
+<div id="record">
+    <div id="record-item"></div>
+</div>
+<div class="yes-check">已核对</div>
+<div class="no-check">
+    <div class="check-money">总计：<span>￥</span><span class="f-36">40000</span></div>
+    <a href="/kefu.html">
+        <div class="add-attention">
+            <img src="/images/zixun.png">
+            <span>咨询</span>
+        </div>
+    </a>
+    <div class="check-bill" id="check-bill">核对</div>
+</div>
+</body>
+<script>
+    $("#check-bill").click(function(){
+        $(".masking").show();
+    });
+    $("#no-cancel").click(function(){
+        $(".masking").hide();
+    });
+    $("#yes-cancel").click(function(){
+        $(".masking").hide();
+        $(".no-check").hide();
+        $(".yes-check").show();
+    });
+</script>
+</html>

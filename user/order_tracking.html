@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>订单跟踪</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!--页面dom-->
+    <script type="text/javascript" src="/js/dm/DM_order_tracking.js"></script>
+</head>
+<body>
+<div id="insert_word"></div>
+<!--<div style="width: 100%;height: 0.81rem"></div>-->
+<div class="leave_word">
+    <textarea placeholder="我来回答" id="leave_word"></textarea>
+    <div class="word_sumbit" id="word_sumbit">发送</div>
+</div>
+</body>
+<script>
+    var orderid = window.location.hash.split("#")[1];
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");//取userid缓存
+//    userid = 182410;
+    var openid = cookies_op.get("openid");
+    var nickname;
+    var replay;//回复锁,防止点击多次回复
+    var screen_h = $(window).height();
+    var leave_word_h = $(".leave_word").height();
+    var show_word_h = screen_h - leave_word_h;
+    $("#insert_word").css("height",show_word_h);
+    window.onload = function(){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/User.json?action=FXLogin&state=WeiXin&openId="+openid,
+            dataType:'json',
+            success:function(result){
+                nickname = result.Data[0].nickName;
+            }
+        });
+        GetOrderReturnVisit(orderid);
+    };
+    /*function order_tracking() {
+        var dm_order_tracking = new DM_order_tracking();
+        var  params = {
+            "orderId": orderid,
+            "PageIndex":1,
+            "PageSize":10
+        };
+        dm_order_tracking.setParams(params);
+        DataCenter.getDataAnsyc("insert_word", dm_order_tracking, cbTradeInfo);
+    }
+    // 回调函数
+    function cbTradeInfo(response, showId, machine)
+    {
+        // 如果还需要用到消息处理机展示数据，可以加上这一句
+        console.log(response);
+        DataCenter.afterSuccess(response, showId, machine)
+    }*/
+    function GetOrderReturnVisit(orderid){
+        $.ajax({
+            type: "post",
+            url:"http://crm.dfhon.com/Ajax/DisHandler.ashx?action=OrderTrackList&orderId="+orderid+"&PageIndex=1&PageSize=100",
+            dataType:'json',
+            success:function(result){
+                console.log(this.url)
+                console.log(result);
+                var html = "";
+                for (var i = 0 ; i<result.data.length; i++){
+                    var timeData = result.data[i].CREATEDATE.replace("T"," ");
+                    var time = timeData.split(".")[0];
+                    html+='<div class="order_tacking">'+
+                                '<div class="title">'+result.data[i].CREATEUSERNAME+'</div>'+
+                                '<p>'+result.data[i].TRACK_DETAIL+'</p>'+
+                                '<span>'+time+'</span>'+
+                            '</div>';
+                }
+                $("#insert_word").html(html).animate({scrollTop: '0px'}, 800);
+            },
+            error : function(result) {
+                console.log(this.url);
+                show_public_mask("东方虹提醒","请求异常，请稍后再试");
+            }
+        });
+    }
+    //发送留言
+    $("#word_sumbit").click(function(){
+        var leave_word = $("#leave_word").val();
+        if(leave_word != ""){
+            if( replay){ return; }
+            replay = true;
+            SetOrderReturnVisit(userid,orderid,leave_word,nickname)
+        }
+    });
+    //留言
+    function SetOrderReturnVisit(userid,orderid,remark,nickname){
+        $.ajax({
+            type: "post",
+            url:"http://crm.dfhon.com/Ajax/DisHandler.ashx?action=AddOrderTrack&orderId="+orderid+"&Remark="+remark+"&UserId="+userid+"&UserName="+nickname,
+            dataType:'json',
+            success:function(result){
+                console.log(this.url);
+                console.log(result);
+                GetOrderReturnVisit(orderid);
+                $("#leave_word").val("");
+                replay = false;
+            },
+            error : function(result) {
+                show_public_mask("东方虹提醒","数据异常，返回后再试");
+            }
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,81 @@
+/*项目需要用到通用样式*/
+.main {
+	width: 3.75rem;
+	margin: 0 auto;
+	position: relative;
+}
+
+#DFH_toast_MASK{
+	font-size: .18rem;
+	width: 3.75rem;
+	margin: 0 auto;
+	background: #fff;
+	z-index: 800000000000;
+	position: fixed;
+	bottom: 0;
+	display: none;
+}
+
+
+/*index测试页面用到的*/
+.comm_name{
+	overflow: hidden;
+	height: 0.4rem;
+}
+.bottom_bar{
+	height:0.32rem;
+	padding-top:0.08rem;
+}
+.bottom_bar .number{
+	margin-top:0.07rem;
+	font-size: 0.12rem;
+}
+.bottom_bar .buy{
+	width: 0.32rem;
+	height: 0.32rem;
+	border-radius: 50%;
+	background-color:#ff5269;
+    background: -moz-linear-gradient(top, #ffe599, #ff5269);  /*火狐*/ 
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%,from(#ffe599), to(#ff5269));  /*谷歌*/ 
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffe599), to(#ff5269));   /* Safari 4-5, Chrome 1-9*/
+	background: -webkit-linear-gradient(top, #ffe599, #ff5269);   /*Safari5.1 Chrome 10+*/
+	background: -o-linear-gradient(top, #ffe599, #ff5269);  /*Opera 11.10+*/	
+}
+
+/*进度条*/
+.progress{
+	height: 0.07rem;
+	border-radius: 0.04rem;
+	background: #f0f0f0;
+}
+.progress .completed{
+	height: 0.07rem;
+	border-radius: 0.04rem;	
+
+    background: -moz-linear-gradient(left, #ffe599, #f88a1f);/*火狐*/ 
+	background: -webkit-gradient(linear, 0% 0%, 100% 0%,from(#ffe599), to(#f88a1f));  /*谷歌*/ 
+	background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(#ffe599), to(#f88a1f));      /* Safari 4-5, Chrome 1-9*/
+	background: -webkit-linear-gradient(left, #ffe599, #f88a1f);   /*Safari5.1 Chrome 10+*/
+	background: -o-linear-gradient(left, #ffe599, #f88a1f);  /*Opera 11.10+*/
+}
+
+/*登录*/
+.dlSJ{
+	width:2.95rem;
+	color:#a4a4a4;
+	border:none;
+	height:0.35rem;
+	font-size:0.18rem;
+	padding-left:0.1rem;
+	border-bottom:1px solid #ebebeb;
+}
+.dlMM{
+	width:2.95rem;
+	color:#a4a4a4;
+	border:none;
+	height:0.35rem;
+	font-size:0.18rem;
+	margin-top:0.2rem;
+	padding-left:0.1rem;
+	border-bottom:1px solid #ebebeb;
+}

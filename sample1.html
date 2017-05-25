@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+<head>
+<title>Sample1-弹动</title>
+<meta charset="utf-8">
+<meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!--通用样式-->
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<!--弹动列表用到的样式-->
+<link rel="stylesheet" type="text/css" href="js/scroll/css/myScroll.css">
+<!--对话框的样式-->
+<link rel="stylesheet" type="text/css" href="js/popup/css/popup.css">
+
+
+<!--onclick加速-->
+<script type="text/javascript" src="js/zy_Click.js"></script>
+
+<!--Main JS，必须-->
+<script type="text/javascript" src="js/base/Main.js"></script>
+<!-- JQuery，必须-->
+<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+
+<!-- 消息处理基类，JSon交互必须 -->
+<script type="text/javascript" src="js/base/MessageMachine.js"></script>
+<!-- 数据处理中心，JSon交互必须 -->
+<script type="text/javascript" src="js/base/DataCenter.js"></script>
+<!-- Json封装类，JSon交互必须 -->
+<script type="text/javascript" src="js/base/JsonEx.js"></script>
+<!-- 模板，JSon数据展示交互必须 -->
+<script type="text/javascript" src="js/template.js"></script> 
+
+
+
+<!-- 该页用到的消息处理类，显示商品列表 -->
+<script type="text/javascript" src="js/dm/DM_Index_ShopList.js"></script>
+
+<!-- 有弹动列表的时候需要一下几个js -->
+<script type="text/javascript" src="js/base/BounceList.js"></script>
+<script type="text/javascript" src="js/scroll/QiScroll.js"></script>
+<script type="text/javascript" src="js/iscroll-probe.js"></script>
+
+<script type="text/javascript" src="js/popup/Popup.js"></script>
+</head>
+
+<body>
+<script type="text/javascript">
+    window.onload = function(){load()}; 
+
+    // 初始化加载数据
+    function load()
+    {
+      // 加载商品列表数据
+      loadShopList();
+    }
+
+    // 加载商品列表
+    function loadShopList()
+    {
+      var dm_Index_ShopList = new DM_Index_ShopList();
+
+      // 如果需要设置参数
+      var params = {
+        "orderBy": "message",
+        "order": "ASC"
+      };
+      dm_Index_ShopList.setParams(params);
+
+      // 弹动区域
+      var blMgr = new BounceListMgr("main");
+
+      // 弹动列表
+      blMgr.init("bclist_comm", dm_Index_ShopList);
+    }
+
+    // 页面中的一些方法
+    function openTradeInfo(tradeno)
+    {
+      $toast("open trade:" + tradeno);
+    }
+
+    function popOrder(tno, name, imgUrl, ecoupon, remain)
+    {
+      stopPropagationEx();
+      alert("popOrder>" + tno);
+    }
+
+    // 确认弹出框
+    function confirm(event)
+    {
+      Popup.confirm(event, "确定看过了？", cbOK);
+    }
+
+    function cbOK()
+    {
+      alert("貌似你点了<确定>");
+    }
+</script> 
+
+<div id="main" class="main">
+    <div class="uinn bc-white">
+      <div class="f-big c-important align-c bd-b-dashed">Sample1 - 弹动</div>
+      <div class="umar-t ub">
+        <div class="c-white bc-red">左边</div>
+        <div class="umar-l ub-f1 align-r bc-dark">中间撑满，文字右对齐</div>
+        <div class="umar-l bc-gray">右边</div>
+      </div>
+      <div class="umar-tb uinn bd bc-gray">
+        <div class="c-important">注意事项</div>
+        <div class="umar-t f-small c-dark">1. 样式绝大多数可以用common.css中的定义满足</div>
+        <div class="umar-ts f-small c-dark">2. 特殊样式，公用的写在style.css中，私有的单独定义css文件，勿直接写在html中，尽量不在页面中写style=...</div>
+        <div class="umar-t f-small c-dark">3. 公用方法，加在main.js中；公共控件单独写js</div>      
+        <div class="umar-ts f-small c-dark">4. 每个页面的js脚本可以挪到js中，但必须一个页面一个js，不要多个页面混用一个js，那样会导致可读性差</div>              
+      </div>
+      <div class='umar-t align-c'>
+        <button id="confirm" class="btn-red-b" ontouchstart="dfh_touch()" onclick="confirm(event)">确定看过了？</button>
+      </div>
+    </div>
+
+    <ul id="bclist_comm" class="umar-t"></ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>用户信息</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+</head>
+<body>
+<div class="user-info">
+    <p>头像<img id="headimgurl" src=""></p>
+</div>
+<div class="user-info">
+    <p>昵称<span id="nickname"></span></p>
+</div>
+<div class="user-info">
+    <p>手机号<span id="phone"></span></p>
+</div>
+<div class="user-info">
+    <p>性别<span id="sex">男</span></p>
+</div>
+<div class="user-info">
+    <p>地区<span id="city">厦门</span></p>
+</div>
+</body>
+<script>
+    var cookies_op = new cookies_op();
+    var openid = cookies_op.get("openid");
+    var sex = cookies_op.get("sex");
+    var province = cookies_op.get("province");
+    $.ajax({
+        type: "post",
+        url:"http://api.dfhon.cn/v3/User.json?action=FXLogin&state=WeiXin&openId="+openid,
+        dataType:'json',
+        success:function(result){
+            $("#headimgurl").attr("src",result.Data[0].userFace);
+            $("#nickname").html(result.Data[0].nickName);
+            $("#phone").html(result.Data[0].Mobile);
+            if( sex == 2 ){
+                $("#sex").html("女");
+            }
+            if( sex == 0){
+                $("#sex").html("未知");
+            }
+            $("#city").html(result.Data[0].city);
+        }
+    });
+</script>
+</html>

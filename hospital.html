@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>医院</title>
+    <!--医院css-->
+    <link rel="stylesheet" type="text/css" href="css/hospital_css.css">
+    <!--通用样式-->
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="js/scroll/css/myScroll.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="js/template.js"></script>
+
+    <!--页面dom-->
+    <script type="text/javascript" src="js/dm/DM_hospital_list.js"></script>
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="js/base/BounceList.js"></script>
+    <script type="text/javascript" src="js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="js/popup/Popup.js"></script>
+
+</head>
+<body>
+<div class="project_select">
+    <div class="select_bar">
+        <img src="/images/select.png">
+        <input type="text" class="project_keyword" id="class_keyword" placeholder="请输入要查找的医院名关键字">
+    </div>
+</div>
+<div class="masking">
+    <div class="province">
+        <span id="have-choose">地区</span>
+        <img src="images/select-down.png">
+    </div>
+    <div class="province-content">
+        <div class="province-item">全国</div>
+    </div>
+</div>
+<div id="hospital-body">
+    <div style="width: 100%;height: 1.8rem"></div>
+    <div id="hospital-list"></div>
+</div>
+</body>
+<script>
+    var blMgr;
+    var province = "";
+    window.onload = function(){load()};
+     // 初始化加载数据
+     function load()
+     {
+         // 弹动区域
+         blMgr = new BounceListMgr("hospital-body");
+         //获取当前地理位置
+         $.ajax({
+             url:"http://api.dfhon.cn/v3/LBS.json?action=GetProvinceCityByIP&app_sdk=gds&app_version=1.0.0&app_terminal=pc",
+             dataType:'json',
+             success:function(result){
+                 console.log(result);
+                 province = result.Data[0].province.replace('省','');
+                 $('#have-choose').html(province);
+                 loadHospitalList(province,"");
+                 console.log(province)
+             }
+         });
+     }
+    function loadHospitalList(area,name){
+        var dm_hospital_list = new DM_hospital_list();
+        // 如果需要设置参数
+        var  params = {
+            "province": area,
+            "name":name,
+            "pageSize":10,
+            "direction":1
+        };
+        dm_hospital_list.setParams(params);
+
+        // 弹动列表
+        blMgr.init("hospital-list", dm_hospital_list);
+    }
+    $(document).ready(function(){
+        $.ajax({
+            type : "get",
+            url : "http://api.dfhon.cn/v3/Class.json?action=GetMallProvince&app_sdk=gds&app_version=1.0.0&app_terminal=pc",
+            dataType : 'json',
+            cache: false,
+            success :function(result){
+                var province = "";
+                for ( var i =0;i < result.Data.length ; i++){
+                    province += '<div class="province-item">'+result.Data[i].Province+'</div>'
+                }
+                $('.province-content').append(province);
+                province_click()
+            },
+            error : function() {
+                alert("error");
+            }
+        });
+        $(".province").click(function(){
+            $(".masking").toggleClass("h-100");
+            if($(this).children('img').attr('src') =='images/select-down.png'){
+                $(this).children('img').attr('src','images/select-up.png')
+            }else {
+                $(this).children('img').attr('src','images/select-down.png')
+            }
+            $(this).children('span').toggleClass('select');
+            $(this).next(".province-content").slideToggle("slow");
+        });
+        function province_click(){
+            $('.province-item').each(function(){
+                if($(this).html() == province){
+                    $(this).addClass('select');
+                }
+                $(this).click(function(){
+                    var province = $(this).html();
+                    $(".masking").toggleClass("h-100");
+                    $(this).siblings().each(function(){
+                        $(this).removeClass('select')
+                    });
+                    $('#have-choose').html(province);
+                    $(this).addClass('select');
+                    $('.province-content').slideToggle("slow");
+                    $('#have-choose').removeClass('select');
+                    $('.province').children('img').attr('src','images/select-down.png');
+                    $("#hospital-list").html("");
+                    loadHospitalList(province,"");
+                })
+            })
+        }
+    });
+    $("#class_keyword").change(function(){
+        var keyword = $("#class_keyword").val();//关键字
+        console.log(keyword);
+        loadHospitalList("",keyword)
+    });
+
+</script>
+</html>

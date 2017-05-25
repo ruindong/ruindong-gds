@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport" />
+    <title>商品详情</title>
+    <link href="/css/goods_css.css" rel="stylesheet" type="text/css" />
+    <link href="/css/common.css" rel="stylesheet" type="text/css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!--页面dom-->
+    <script type="text/javascript" src="/js/dm/DM_goods_comments.js"></script>
+</head>
+<body>
+<div class="goods-detail-content">
+    <!--商品详情-->
+    <div class="goods_detail">
+        <img width="100%" id="item-pic" src="">
+        <div class="detail_title" id="detail_title">
+            <!--ajax商品标题价格-->
+        </div>
+        <div class="bg_f4f4f4"></div><!--分割条-->
+        <div class="content_92" id="hospital">
+            <!--ajax医院信息-->
+        </div>
+        <div class="bg_f4f4f4"></div><!--分割条-->
+        </div>
+        <div class="content_92">
+            <div class="order_prcess">
+                <img src="/images/service_intru.png">
+                <p>服务介绍</p>
+            </div>
+            <p class="text_introduce" id="text_introduce">
+                <!--ajax产品-->
+            </p>
+        </div>
+        <div class="bg_f4f4f4"></div><!--分割条-->
+        <div class="detail_read_more" id="have-star"></div>
+        <!--评论内容-->
+        <div class="discuss_area" id="discuss_area">
+        </div>
+    </div>
+    <!--立即购买-->
+    <div class="hospital-footer">
+        <a href="/kefu.html">
+            <div class="add-attention">
+            <img src="/images/zixun.png">
+            <span>咨询</span>
+            </div>
+        </a>
+        <div class="order-face" id="order">下单</div>
+    </div>
+</div>
+</body>
+</html>
+<script src="/js/public_new.js"></script>
+<script type="text/javascript">
+    var hash_content = window.location.hash;//获取链接后#号内容
+    var item_id = hash_content.split("=")[1];
+    console.log(item_id);
+    goods_detail(item_id);//商品详情
+    //    商品详情func
+    function goods_detail(item_id) {
+        $.ajax({
+            type: "post",
+            url: "http://api.dfhon.cn/v3/Activity.json?action=GetCouponDetail&app_sdk=gds&app_version=1.0.0&app_terminal=pc&id=" + item_id,
+            dataType: 'json',
+            success: function (result) {
+                console.log(result);
+                var html, html_hos
+                $("#item-pic").attr("src", result.Data[0].ImgUrl);
+                html = '<ul>' +
+                        '<li><p>' + result.Data[0].Title + '</p></li>' +//标题
+                        '<li><span>现价:  </span><span class="now_price">  ￥' + result.Data[0].PreferPrice + '</span></li>' +//优惠价和预约数
+                        '<li><span>佣金:  </span><span class="now_price">￥'+result.Data[0].Commission+'</span><span class="detail_area">' + result.Data[0].City + '</span></li>' +//原价和位置
+                        '</ul>';
+                html_hos = '<a href="/hospital/hospital_info_new.html#'+result.Data[0].HospitalId+'">' +
+                        '<div class="goods_hospital">' +
+                        '<img src=' + result.Data[0].HospitalPhoto + '>' +
+                        '<p>' + result.Data[0].HospitalName + '</p>' +
+                        '<img class="arrow_right" src="/images/arrow_right.png">' +
+                        '</div>' +
+                        '</a>';
+                $("#detail_title").html(html);
+                $("#hospital").html(html_hos);
+                $("#text_introduce").html(result.Data[0].Intro);
+                var  html_star ='<span class="detail_score">' + star_calculate(result.Data[0].TotalCommentStart) + '</span><span>'+result.Data[0].TotalCommentStart+'分</span>'+
+                                    '<img class="arrow_right" src="/images/arrow_right.png">'+
+                                    '<span style="float: right">查看更多</span>';
+                $("#have-star").html(html_star);
+                $("#order").click(function(){
+                    window.location.href = "/goods/order_information.html#"+item_id;
+                })
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+    //    商品评论func
+    goods_detail_comments(item_id);
+    // 加载商品详情评论信息
+    function goods_detail_comments(id)
+    {
+        var dm_Comments = new DM_goods_comments();
+        var  params = {
+            "Id": id,
+            "pageSize":3,
+            "direction":1
+        };
+        dm_Comments.setParams(params);
+
+        // 提取数据并更新
+        DataCenter.getDataAnsyc("discuss_area", dm_Comments, cbTradeInfo);
+    }
+    // 回调函数
+    function cbTradeInfo(response, showId, machine)
+    {
+        console.log(response.RecordCount+"....."+response.TotalCommentStart)
+        if(response.RecordCount == 0 ){
+            $("#have-star").remove();
+        }
+        $("#have-star").click(function(){
+           window.location.href = "/hospital/public_jump.html#good_comments="+item_id+"&"+response.TotalCommentStart+"&"+response.RecordCount;
+        });
+        DataCenter.afterSuccess(response, showId, machine);
+    }
+
+</script>

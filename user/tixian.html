@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>提现</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+</head>
+<body>
+<div class="masking">
+    <div class="code-container">
+        <p>请用手机尾号<span id="phone_last">1235</span>接收验证码</p>
+        <div class="input-code">
+            <input type="number" maxlength="6" placeholder="请输入手机验证码" id="code">
+            <div class="get-code" id="get-code">获取</div>
+        </div>
+        <div class="check" id="no-bind">取消</div>
+        <div class="check c-ff523c" id="yes-bind">确定</div>
+    </div>
+</div>
+<div class="tixian">
+    <span>可提现金额</span>
+    <p id="Balance">0.00</p>
+</div>
+<div class="bank-infor">
+    <span>银行卡号：</span>
+    <span id="card-num"></span>
+</div>
+<div class="bank-infor">
+    <span>转出金额：</span>
+    <input type="number" placeholder="请输入提现金额" id="tixian">
+</div>
+<p class="bank-mark">当日17：00之前转出，7个工作日内到账</p>
+<div class="footer_bind">提现</div>
+</body>
+<script>
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");//取userid缓存
+    //userid = 182261;
+    var phone = cookies_op.get("Mobile");//取手机号缓存
+    //phone = "15750771215";
+    var phone_last = phone.substr(7,4);
+    //alert(phone_last);
+    $("#phone_last").html(phone_last);
+    //提现锁
+    var bind_flag = false;
+    //获取验证码
+    var getcode = false;
+    var num = 60;
+    var interval;
+    $("#get-code").click(function(){
+        if(getcode){return}
+        getcode = true;
+        $("#get-code").html("60s");
+        interval = window.setInterval("last_time(num)",1000);
+        phone_code(phone);//获取验证码
+    });
+    //每秒执行一次
+    function last_time(time){
+        num = time-1;
+        $("#get-code").html(num+"s");
+        if(num == 0){
+            $("#get-code").html("获取");
+            num = 60;
+            clearInterval(interval);
+            getcode = false
+        }
+    }
+    packet(userid);//获取用户钱包信息
+    //取消提现
+    $("#no-bind").click(function(){
+        $(".masking").hide();
+    });
+    //确认提现
+    $("#yes-bind").click(function(){
+        if(bind_flag){ return }
+        bind_flag = true;
+        var code = $("#code").val();
+        if( code == "" ){
+            alert("请输入手机验证码");
+            bind_flag =false;
+            return;
+        }
+        $(".masking").hide();
+        //提交验证码验证之后跳转
+        user_tixian(userid,tixian,code);
+    });
+    //验证提交
+    $(".footer_bind").click(function(){
+        submitForm();
+    });
+    var tixian;
+    function beforeSubmit() {
+        tixian = $("#tixian").val();//提现金额
+        var Balance = $("#Balance").html();
+        /*if (tixian == "" || parseInt(tixian) <= 0 || parseInt(Balance) < parseInt(tixian) ) {
+            alert("提现金额错误");
+            return false;
+        }*/
+        return true;
+    }
+    //信息确认成功准备提交
+    function submitForm() {
+        var isValidated = beforeSubmit();
+        if (isValidated) {
+            //$(".footer_bind").text("正在绑定。。。");
+            $(".masking").show();
+        }
+    }
+
+    //提现
+    function user_tixian(userId,money,code){
+        $.ajax({
+            url:"http://api.dfhon.cn/v3/Popularize.json?action=ApplyWithdrawDeposit&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userId+"&money"+money+"&phoneCode="+code,
+            dataType:'json',
+            success:function(result){
+                console.log( result);
+                packet(userId);//提现完获取账户余额
+            }
+        });
+    }
+    //获取用户钱吧信息
+    function packet(userId){
+        $.ajax({
+            url:"http://api.dfhon.cn/v3/Popularize.json?action=GetMyBalance&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userId,
+            dataType:'json',
+            success:function(result){
+                console.log( result);
+                var code = result.AuthAccount ;
+                $("#Balance").html(result.Balance);
+                $("#card-num").html(code.substring(0,4)+"************"+code.substring(16,19));
+            }
+        });
+    }
+    //获取验证码
+    function phone_code(phone){
+        $.ajax({
+            type: "post",
+            url:"http://api.dfhon.cn/v3/MobileMsg.json?action=GetPhoneCode&app_sdk=gds&app_version=1.0.0&app_terminal=pc&mobile="+phone,
+            dataType:'json',
+            success:function(result){
+                console.log(result)
+                //alert("发送成功")
+            },
+            error : function(result) {
+                alert("发送失败，请稍后再试");
+            }
+        });
+    }
+</script>
+</html>

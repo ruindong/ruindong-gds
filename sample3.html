@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+<head>
+<title>Sample3 - Post</title>
+<meta charset="utf-8">
+<meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!--通用样式-->
+<link rel="stylesheet" type="text/css" href="css/common.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<!--弹动列表用到的样式-->
+<link rel="stylesheet" type="text/css" href="js/scroll/css/myScroll.css">
+
+<!--onclick加速-->
+<script type="text/javascript" src="js/zy_Click.js"></script>
+
+<!--Main JS，必须-->
+<script type="text/javascript" src="js/base/Main.js"></script>
+<!-- JQuery，必须-->
+<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+
+<!-- 消息处理基类，JSon交互必须 -->
+<script type="text/javascript" src="js/base/MessageMachine.js"></script>
+<!-- 数据处理中心，JSon交互必须 -->
+<script type="text/javascript" src="js/base/DataCenter.js"></script>
+<!-- Json封装类，JSon交互必须 -->
+<script type="text/javascript" src="js/base/JsonEx.js"></script>
+
+<!-- 模板，JSon数据展示交互必须，此处不用了 -->
+<!--<script type="text/javascript" src="js/template.js"></script>--> 
+
+
+
+<!-- Post消息处理基类，Post交互必须-->
+<script type="text/javascript" src="js/base/MessagePostWithoutRsp.js"></script>
+
+<!-- md5加密 -->
+<script type="text/javascript" src="js/md5.js"></script>
+</head>
+
+<body>
+<script type="text/javascript"> 
+var account;
+var password;
+
+// 合法性校验
+function validate()
+{
+    account = $.trim($("#account").val());  // 过滤空格
+    password = $.trim($("#password").val());
+
+    if (!validatePhoneNum(account)) {
+        $toast("请输入正确的手机号");
+        return false;
+    }  
+
+    if (password == "") {
+        $toast("请输入密码");
+        return false;
+    }
+
+    return true;
+} 
+
+// 手机号码登录
+function signIn() 
+{
+    if(!validate())
+    {
+        return;
+    }
+
+    // Post消息简化一点，直接setUrl即可用
+    var msgPost = new MessagePostWithoutRsp();
+    msgPost.setUrl(url_host + "/signin");
+
+    // MD5加密
+    password = password.MD5(16);
+    
+    var params = {
+        "account": account,
+        "password": password
+    };
+    
+    DataCenter.post(msgPost, params, cbSignIn);
+}
+
+// 手机号码登录回调函数
+function cbSignIn(result, machine)
+{
+    if (result) 
+    {
+        if (result.code == 0) 
+        {
+            // 几个字段，根据需要使用
+            var signInfo = result.data;
+
+            alert("登录成功：signInfo.id>" + signInfo.userId);
+        }
+        else
+        {
+            $toast(result.message);
+        }
+    }
+}
+</script>    
+
+  <div class="main uinn bc-white">
+     <div>
+        <input id="account" class="dlSJ" type="text" name="account" placeholder='手机号' value="" />
+        <input id="password" class="dlMM" type="password" name="password" placeholder='密码' value="" />
+     </div>
+     <div class='umar-t align-c'>
+        <button class="btn-red-b" onclick="signIn();">登录</button>
+     </div>     
+  </div>
+</body>
+</html>

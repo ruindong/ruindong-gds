@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>消息提醒</title>
+    <!--弹动列表用到的样式-->
+    <link rel="stylesheet" type="text/css" href="/js/scroll/css/myScroll.css">
+    <!--onclick加速-->
+    <script type="text/javascript" src="/js/zy_Click.js"></script>
+
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+
+    <!-- 消息处理基类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/MessageMachine.js"></script>
+    <!-- 数据处理中心，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/DataCenter.js"></script>
+    <!-- Json封装类，JSon交互必须 -->
+    <script type="text/javascript" src="/js/base/JsonEx.js"></script>
+    <!-- 模板，JSon数据展示交互必须 -->
+    <script type="text/javascript" src="/js/template.js"></script>
+
+    <!-- 有弹动列表的时候需要一下几个js -->
+    <script type="text/javascript" src="/js/base/BounceList.js"></script>
+    <script type="text/javascript" src="/js/scroll/QiScroll.js"></script>
+    <script type="text/javascript" src="/js/iscroll-probe.js"></script>
+    <script type="text/javascript" src="/js/popup/Popup.js"></script>
+    <!--页面dom-->
+    <!--官方消息-->
+    <script type="text/javascript" src="/js/dm/DM_office_msg.js"></script>
+    <!--订单提醒-->
+    <script type="text/javascript" src="/js/dm/DM_order_remind_msg.js"></script>
+    <!--订单跟踪-->
+    <script type="text/javascript" src="/js/dm/DM_order_tracking_msg.js"></script>
+    <!--提现提醒-->
+    <script type="text/javascript" src="/js/dm/DM_server_msg.js"></script>
+</head>
+<body style="background-color: #ffffff">
+<div id="message">
+    <div id="message_list"></div>
+</div>
+</body>
+<script>
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");
+//    userid = 182410;
+    var typeId = window.location.hash.split("#")[1];
+    console.log(typeId);
+    var blMgr;
+    window.onload = function(){
+        load();
+    };
+    function load(){
+        // 弹动区域
+        blMgr = new BounceListMgr("message");
+        var typeId = window.location.hash.split("#")[1];
+        message_type(userid,typeId)
+    }
+    //所属大分类:1:官方消息 2:评论 3:赞 4:关注 5:邀请 6:采纳提醒
+    // 7:投票 8:服务提醒 9:日志更新 10:专属医生 11:私信聊天12:系统消息 13：订单提醒 14提现提醒 15订单跟踪
+
+    var dm_type;
+    //1：官方消息
+    function message_type(userid,typeId){
+        if(typeId == 1 ){//官方消息
+            dm_type = new DM_office_msg();
+        }else if(typeId == 8){
+            dm_type = new DM_server_msg();
+        }else if(typeId == 10 ){//专属医生
+            window.location.href = '/kefu.html'
+        }else if(typeId == 13 ){//订单提醒
+            dm_type = new DM_order_remind_msg();
+        }else if(typeId == 14 ){//提现提醒
+            dm_type = new DM_tixian_msg;
+        }else if(typeId == 15 ){//订单跟踪
+            dm_type = new DM_order_tracking_msg;
+        }
+        // 如果需要设置参数
+        var  params = {
+            "userId": userid,
+            "pageSize":10,
+            "direction":1,
+            "typeId":typeId
+        };
+        dm_type.setParams(params);
+        // 弹动列表
+        blMgr.init("message_list", dm_type);
+    }
+</script>
+</html>

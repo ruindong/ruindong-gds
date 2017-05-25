@@ -1,0 +1,557 @@
+/*通用样式*/
+@charset "utf-8";
+
+/*样式重置*/
+* {
+	padding: 0;
+	margin: 0;
+}
+
+html {
+	height: 100%;
+}
+
+body{
+	font-size: 0.28rem;
+    color: #333;
+    line-height: 1.46;
+	background-color: #ffffff;
+}
+
+a {
+	text-decoration: none;
+	color: #a4a4a4;
+}
+
+fieldset,img {
+	border: 0;
+}
+address,caption,cite,code,dfn,em,strong,th,var {
+	font-style: normal;
+	font-weight: normal;
+}
+ol,ul ,li{
+	list-style: none;
+}
+caption,th {
+	text-align: left;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-size: 100%;
+	font-weight: normal;
+}
+abbr,acronym {
+	border: 0;
+}
+
+*:focus { outline: none; }
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form, 
+fieldset,input,textarea,p,blockquote,th,td {
+	margin: 0;
+	padding: 0;
+}
+img{
+	width: 100%;
+}
+body {
+	overflow-x: hidden;
+    /*x轴超出的时候隐藏*/
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+    /*点击元素的高亮颜色，一般用于ios 移动设备*/
+	font-family: 微软雅黑;
+	width: 100%;
+	overflow-x: hidden;
+	/*height: 100%;*/
+	position: relative;
+	margin-bottom: 1rem;
+}
+input{
+	border: 0rem;
+	outline: none;
+	/*height: 1rem;*/
+}
+input::-webkit-input-placeholder{
+	/*font-size: 0.3rem;*/
+	color: #4e4e4e;
+	font-family: 微软雅黑;
+}
+textarea{
+	border: none;
+	outline: none;
+	resize: none;
+	/*width: 92%;*/
+	/*padding: 4% 4%;*/
+	height: 2rem;
+	overflow-x: hidden;
+	font-size: 0.30rem;
+	line-height: 0.45rem;
+	color: #4e4e4e;
+}
+
+/*淡入淡出*/
+@-webkit-keyframes fadeIn {
+	0% {
+		opacity: 0.5; /*初始状态 透明度为0*/
+	}
+	30% {
+		opacity: 1; /*中间状态 透明度为0*/
+	}
+	80% {
+		opacity: 0.8; /*中间状态 透明度为0*/
+	}	
+	100% {
+		opacity: 0.5; /*结尾状态 透明度为1*/
+	}
+}
+.needFadeIn
+{
+	-webkit-animation-name: fadeIn; /*动画名称*/
+	-webkit-animation-duration: 2.5s; /*动画持续时间*/
+	-webkit-animation-iteration-count: 1; /*动画次数*/
+	-webkit-animation-delay: 0s; /*延迟时间*/
+}
+
+button{
+	border: none;
+}
+button:disabled{
+    background-color:#999;
+    color:#eaeaea;
+}	
+
+
+/**css-box*/
+.ub
+{
+	display: -webkit-box !important;
+	display: -moz-box !important;
+	display: box !important;
+}
+
+.ub-fh
+{
+	width:100%;
+}
+.ub-fv
+{
+	height:100%;
+}
+.ub-ver
+{
+	-webkit-box-orient:vertical;
+	-moz-box-orient:vertical;	
+	box-orient:vertical;
+}
+.ub-f1
+{
+	position:relative;
+	-webkit-box-flex: 1; 
+	-moz-box-flex: 1;
+	box-flex: 1;
+}
+.ub-f2
+{
+	position:relative;
+	-webkit-box-flex: 2;
+	-moz-box-flex: 2;	
+	box-flex: 2; 
+	width: 1rem;
+}
+
+.ub-f3
+{
+	position:relative;
+	-webkit-box-flex: 3;
+	-moz-box-flex: 3;	
+	box-flex: 3;
+}
+
+.ub-f4
+{
+	position:relative;
+	-webkit-box-flex: 4;
+	-moz-box-flex: 4;	
+	box-flex: 4;
+}
+
+.ub-as {
+    -webkit-box-align: start;
+    box-align: start;
+    -moz-box-align: start;    
+}
+.ub-ac
+{
+	-webkit-box-align:center;
+	box-align:center;
+    -moz-box-align: center;    	
+}
+.ub-ae
+{
+	-webkit-box-align:end;
+	box-align:end;
+    -moz-box-align: end;   	
+}
+
+.ub-ps
+{
+	-webkit-box-pack:start;
+	box-pack:start;
+	-moz-box-pack:start;	
+}
+.ub-pc
+{
+	-webkit-box-pack:center;
+	box-pack:center;
+	-moz-box-pack:center;		
+}
+.ub-pe
+{
+	-webkit-box-pack:end;
+	box-pack:end;
+	-moz-box-pack:end;			
+}
+.ub-pj
+{
+	-webkit-box-pack:justify;
+	box-pack:justify;
+	-moz-box-pack:justify;	
+}
+
+/**图片*/
+.ub-img
+{
+	-webkit-background-size:contain;
+	background-size:contain;
+	background-repeat:no-repeat;
+	background-position:center;
+}
+
+.ub-img1
+{	
+	-webkit-background-size:cover;
+	background-size:cover;
+	background-repeat:no-repeat;
+	background-position:center;
+}
+
+/**字体*/
+.f-small{
+	font-size: 0.24rem;
+}
+.f-normal{
+	font-size: 0.28rem;
+}
+.f-big{
+	font-size: 0.32rem;
+}
+.f-big2{
+	font-size: 0.36rem;
+}
+.f-big3{
+	font-size: 0.4rem;
+}
+.f-bold{
+	font-weight: bold;
+}
+
+/*常规颜色*/
+.c-normal{
+	color: #333;
+}
+/*重要颜色：用于价格等醒目提示*/
+.c-important{
+	color: #f10000;
+}
+/*特殊颜色：用于标题或一些特殊字段*/
+.c-special{
+	color: #618EFF;
+}
+/*链接采用颜色*/
+.c-link{
+	color: #618EFF;
+}
+/*次要颜色*/
+.c-gray{
+	color: #A4A4A4;
+}
+.c-dark{
+	color: #666;
+}
+/*白色*/
+.c-white{
+	color: #fff;
+}
+
+/*背景色*/
+.bc-white{
+	background-color: #fff;
+}
+.bc-gray{
+	background: #f4f4f4;
+}
+.bc-dark{
+	background: #e1e1e1;
+}
+.bc-red{
+	background: #ff3d57;
+}
+
+/*文本对齐方式*/
+.align-c{
+	text-align: center;
+}
+.align-l{
+	text-align: left;
+}
+.align-r{
+	text-align:right;
+}
+
+/**间距*/
+.umar{
+	margin: 0.2rem;
+}
+.umar-t{
+	margin-top: 0.2rem;
+}
+.umar-b{
+	margin-bottom: 0.2rem;
+}
+.umar-l{
+	margin-left: 0.2rem;
+}
+.umar-r{
+	margin-right: 0.2rem;
+}
+.umar-ts{
+	margin-top: 0.1rem;
+}
+.umar-tb{
+	margin-top: 0.4rem;
+}
+
+/**边距*/
+.uinn{
+	padding: 0.2rem;
+}
+.uinn2{
+	padding: 0.2rem 0.1rem;
+}
+.uinn-b{
+	padding-bottom: 0.2rem;
+}
+.uinn-t{
+	padding-top: 0.2rem;
+}
+.uinn-l{
+	padding-left: 0.2rem;
+}
+.uinn-r{
+	padding-right: 0.2rem;
+}
+
+/**边框*/
+.bd{
+	border: 1px solid #d0d0d0;
+}
+.bd-b{
+	border-bottom: 1px solid #d0d0d0;
+}
+.bd-l{
+	border-left: 1px solid #d0d0d0;
+}
+.bd-t{
+	border-top: 1px solid #d0d0d0;
+}
+.bd-r{
+	border-right: 1px solid #d0d0d0;
+}
+.bd-b-dashed{
+	border-bottom: 1px dashed #d0d0d0;
+}
+
+/**图片尺寸*/
+.umwh{
+	width: 0.5rem;
+	height: 0.5rem;
+}
+.umwh-1{
+	width: 0.75rem;
+	height: 0.75rem;
+}
+.umwh-2{
+	width: 1rem;
+	height: 1rem;
+}
+.umwh-3{
+	width: 1.5rem;
+	height: 1.5rem;
+}
+.umwh-4{
+	width: 2rem;
+	height: 2rem;
+}
+
+/**宽度*/
+.umw-75{
+	width: 75%;
+}
+.umw-50{
+	width: 50%;
+}
+.umw-33{
+	width: 33%;
+}
+.umw-25{
+	width: 25%;
+}
+
+/**按钮*/
+.btn-red {
+    font-size: 0.24rem;
+    /*width: 0.55rem;
+    height: 0.3rem;*/
+    padding: 0.1rem 0.2rem;
+    border-radius: 5px;
+    text-align: center;
+    color: #fff;
+    background: #ff5269;
+	margin: 0 auto;
+}
+
+.btn-red-b {
+	font-size: 0.32rem;
+    width: 5rem;
+    padding: 0.15rem 0.2rem;
+    background: #ff5269;
+    color: #fff;
+    display: block;
+    border-radius: 0.6rem;
+    text-align: center;
+	margin: 0 auto;
+}
+
+/**图片*/
+.img-cover{
+	width: 1.6rem;
+	height: 1.6rem;
+}
+.img-head{
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;	
+}
+.img-icon1{
+    width: 0.34rem;
+    height: 0.38rem;
+}
+
+.uhide
+{
+	display:none !important;
+}
+.h-100{
+	height: 100%;!important;
+}
+.upload{
+	position: fixed;
+	z-index: 10000;
+	width: 5.5rem;
+	margin: 0 auto;
+	left: 1rem;
+	top: 4rem;
+	box-shadow: 0 0 5px #FFFFFF;
+	-moz-box-shadow: 0 0 5px #FFFFFF;
+	-webkit-box-shadow: 0 0 5px #FFFFFF;
+	-o-box-shadow: 0 0 5px #FFFFFF;
+}
+.upload .progress{
+	position: relative;
+	height: 0.4rem;
+	border-radius: 0.08rem;
+	background: #f0f0f0;
+}
+.upload .completed{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 0.4rem;
+	background: -moz-linear-gradient(left, #ffe599, #f88a1f);/*火狐*/
+	background: -webkit-gradient(linear, 0% 0%, 100% 0%,from(#ffe599), to(#f88a1f));  /*谷歌*/
+	background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(#ffe599), to(#f88a1f));      /* Safari 4-5, Chrome 1-9*/
+	background: -webkit-linear-gradient(left, #ffe599, #f88a1f);   /*Safari5.1 Chrome 10+*/
+	background: -o-linear-gradient(left, #ffe599, #f88a1f);  /*Opera 11.10+*/
+}
+.upload .info{
+	position: absolute;
+	z-index: 10001;
+	top: 0;
+	left: 0;
+	width: 5.5rem;
+	text-align: center;
+	font-size: 0.14rem;
+
+}
+.mask {
+	margin: 0;
+	padding: 0;
+	border: none;
+	width: 100%;
+	height: 100%;
+	background: #000;
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+	z-index: 9999;
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: none;
+}
+/*公用提示弹窗样式*/
+.public-mask{
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top:0rem;
+	background-color: rgba(0,0,0,0.7);
+	z-index: 9999;
+}
+.public-mask .box{
+	width: 82%;
+	margin: 3.8rem auto;
+	background-color: #ffffff;
+	text-align: center;
+	font-size: 0.3rem;
+	color: #4e4e4e;
+	border-radius: 0.1rem;
+	padding-top: 1px;
+	position: absolute;
+	left: 1px;
+	right: 1px;
+}
+.public-mask .box .box-title{
+	margin: 0.2rem 0rem;
+}
+.public-mask .box .box-button{
+	width: 100%;
+	height: 1rem;
+	font-size: 0.36rem;
+	line-height: 1rem;
+	border-top: 1px solid#ebebeb;
+	margin-top: 0.2rem;
+}
+/*加载旋转动画*/
+@-webkit-keyframes circle{
+	0%{ transform:rotate(0deg); }
+	100%{ transform:rotate(-360deg); }
+}
+.submit_load{
+	display: none;
+	margin: 0.1rem;
+	width: 0.32rem;
+	height: 0.32rem;
+	border-radius: 0.16rem;
+	vertical-align: middle;
+	-webkit-animation: circle 1.5s infinite linear;
+}

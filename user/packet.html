@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+    <title>我的钱包</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+</head>
+<body style="background-color: #f4f4f4">
+    <div class="packet">
+        <div class="can-use">
+            <span>账户余额（元）</span>
+            <p class="color" id="Balance">0.00</p>
+        </div>
+        <!--<div class="not-use">
+            <span>冻结金额（元）</span>
+            <p class="color_" id="DisableBalance">0.00</p>
+        </div>-->
+    </div>
+    <div class="bg_f4f4f4"></div><!--分割条-->
+    <a href="/user/check_detail.html">
+        <p class="user-class">查看资金明细
+            <img class="arrow_right" src="/images/arrow_right.png">
+        </p>
+    </a>
+    <!--<a href="/user/check_bill.html">
+        <p class="user-class">账单核对
+            <img class="arrow_right" src="/images/arrow_right.png">
+        </p>
+    </a>-->
+    <a href="/user/bank_binding.html">
+        <p class="user-class" id="card_bind">银卡卡绑定
+            <img class="arrow_right" src="/images/arrow_right.png">
+            <span class="card-set" id="card-set"></span>
+        </p>
+    </a>
+</body>
+<script>
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");
+    //userid = 480969;
+    packet(userid);//获取用户钱包信息
+    function packet(userId){
+        var timestamp = Date.parse(new Date());
+        $.ajax({
+            url:"http://api.dfhon.cn/v3/Popularize.json?action=GetMyBalance&app_sdk=gds&app_version=1.0.0&app_terminal=pc&userId="+userId+"&rand="+timestamp,
+            dataType:'json',
+            success:function(result){
+                console.log( this.url);
+                console.log( result);
+                $("#Balance").html(result.Balance);
+                $("#DisableBalance").html(result.DisableBalance);
+                var authStatus = result.AuthStatus;
+                var text;
+                switch (authStatus){
+                    case 0:text="未绑定";break;
+                    case 1:text="绑定成功";break;
+                }
+                $("#card-set").html(text);
+            }
+        });
+    }
+</script>
+</html>

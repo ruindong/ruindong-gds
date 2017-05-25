@@ -1,0 +1,210 @@
+<!--/*******************
+* $File:hosptial.html
+*$Description: 医院详情
+*$Author: luyd
+*$Time:2016/10/24
+*$Update:
+*$UpdateDate:
+*$UpdateContent:
+*Copyright(c) 2007 - 2016 by dfhon.com All rights reserved
+*******************/-->
+<html>
+<head>
+    <meta charset="utf-8" name="viewport"content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>医院详情</title>
+    <!--医院css-->
+    <link rel="stylesheet" type="text/css" href="/css/hospital_css.css">
+    <!--通用样式-->
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <!--Main JS，必须-->
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+    <!-- JQuery，必须-->
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+</head>
+<body>
+<div style="display: block" id="hospital">
+    <div id="hospital-info"></div>
+    <div class="bg_f4f4f4"></div><!--分割条-->
+    <!--医生团队-->
+    <div id="doctor-team"></div>
+    <div class="bg_f4f4f4"></div><!--分割条-->
+    <!--医院案例 写在public_new.js-->
+    <div id="hospital-anli"></div>
+    <!--聚优惠-->
+    <div class="bg_f4f4f4"></div><!--分割条-->
+    <div id="juyouhui"></div>
+    <div class="prompt">
+        <p class="title">东方虹提示：</p>
+        <p>医院信息由医院自行提供，内容的真实性、准备性和合法性有信息发布医院负责。如您发现医院页面涉及虚假宣传内容请立即向东方虹网举报！</p>
+    </div>
+</div>
+<!--医院介绍-->
+<div class="hospital-body" id="hospital-information">
+</div>
+
+</body>
+<script type="text/javascript">
+    var hash_content = window.location.hash;//获取链接后#号内容
+    var hospital_id = hash_content.split("#")[1];
+    var userId;//医院的userid--用于查找案例
+    console.log(hospital_id);
+    hospital_info(hospital_id);
+    //juyouhui(hospital_id);
+    //医院信息
+    function hospital_info(hospital_id){
+        $.ajax({
+            type: "post",
+            url: "http://api.dfhon.cn/v3/Hospital.json?action=GetHospitalInfo&app_sdk=gds&app_version=1.0.0&app_terminal=pc&hospitalId="+hospital_id,
+            dataType: 'json',
+            success: function (result) {
+                console.log(result);
+                var hosptial_info = '<div id="header">'+
+                        '<img src="'+result.Data[0].HospitalPicture+'">'+
+                        '<p class="p1">'+
+                        '<span>'+result.Data[0].HospitalName+'</span>'+
+                        '<img id="credit-level" width="0.3rem" class="icon" src="/images/v.jpg">'+
+                        '</p>'+
+//                        '<p class="ccc">'+
+//                        '<span>'+result.Data[0].HospitalTitle+'</span>'+
+//                        '</p>'+
+                        '</div>'+
+                        '<div class="bg_f4f4f4"></div>'+<!--分割条-->
+                        '<a href="public_jump.html#comments='+result.Data[0].HospitalId+'&'+result.Data[0].CommentScore+'&'+result.Data[0].CommentCount+'">' +
+                        '<div class="detail_read_more" id="have-star">'+<!--评分-->
+                        star_calculate(result.Data[0].CommentScore)+
+                        '<img class="arrow_right" src="/images/arrow_right.png">'+
+                        '<span class="comment-num">共'+result.Data[0].CommentCount+'人评论&nbsp;&nbsp;</span>'+
+                        '</div>' +
+                        '</a>'+
+                        '<div class="hospitalSite">'+
+                        '<p class="list" id="hosp-intro">医院介绍，资质认证'+
+                        '<img class="arrow_right" src="/images/arrow_right.png">'+
+                        '</p>'+
+                        '<p class="list">门诊时间：'+result.Data[0].OperatingTime+'</p>'+
+                        '<div class="hosptital_address">'+
+                        '<img src="/images/area.png">'+
+                        '<p>'+result.Data[0].Address+'</p>'+
+                        '<a href="tel:'+result.Data[0].Phone+'"><img src="/images/telephone.png"></a>'+
+                        '</div>'+
+                        '</div>';
+                $("#hospital-info").html(hosptial_info);
+                if( result.Data[0].CreditLevel >= 3){
+                    $("#credit-level").show();
+                }
+                // 获取医院的案例
+                userId = parseInt(result.Data[0].UserId);
+                hosp_or_doc_anli("hospital-anli",userId,hospital_id,"",3,0);//插入的dom位置，医院的userid，医院的hostpitalid/医生的doctorid,每页显示条数pagesize,formid
+//				医院介绍遮罩
+                var hosp = '<div class="hospital-intro">医院信息</div>'+
+                        '<div class="hospital-certif"><span class="col">资质认证：</span>'+CreditLevel(result.Data[0].CreditLevel)+'</div>'+
+                        '<div class="business-hours"><span class="col">营业时间：</span>'+result.Data[0].OperatingTime+'</div>'+
+                        '<div class="bg_f4f4f4"></div>'+
+                        '<div id="hospital-content">'+result.Data[0].Description+'</div>';
+                $("#hospital-information").append(hosp);
+                //显示医院资料
+                $("#hosp-intro").click(function(){
+                    $("#hospital-information").show();
+                    $("#hospital").hide();
+                });
+                $("#hospital-information").click(function(){
+                    $("#hospital-information").hide();
+                    $("#hospital").show();
+                });
+                doctor_team(hospital_id);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+    //医院团队
+    function  doctor_team(hospital_id){
+        $.ajax({
+            type: "post",
+            url: "http://api.dfhon.cn/v3/Doctor.json?action=GetDoctorByHospitalId&app_sdk=gds&app_version=1.0.0&app_terminal=pc&pageSize=3&hospitalId="+hospital_id,
+            dataType: 'json',
+            success: function (result) {
+                console.log(result);
+                if(result.Data.length == 0){//测试遇到无医生团队的医院，不继续执行下面代码
+                    return 0;
+                }
+                var doctor = "";
+                var doctor_team = '<a href="public_jump.html#doctor='+hospital_id+'">' +
+                                    '<p class="doc-item">'+
+                                    '<img class="icon" src="/images/ps.png">医生团队'+
+                                    '<span class="total-peo">'+
+                                    result.RecordCount +
+                                    '<img class="arrow_right" src="/images/arrow_right.png">'+
+                                    '</span>'+
+                                    '</p></a>'+
+                                    '<div class="hospitalSite">'+
+                                    '<ul id="doctor">';
+                for(var i = 0; i< result.Data.length ; i++){
+                    doctor +=  '<li class="parent-pos">'+
+                                level(result.Data[0].CreditLevel)+//是否有认真钻石的标记
+                                '<div class="facebox">'+
+                                '<img class="userFace" src="'+result.Data[i].UserFace+'">'+
+                                '</div>'+
+                                '<div class="inner">'+
+                                '<p><span class="name">'+result.Data[i].DoctorName+'</span>  '+result.Data[i].JobTitle+'</p>'+
+                                '<p>'+result.Data[i].HospitalName+'</p>'+
+                                '<p>擅长：<span>'+result.Data[i].DoctorProject+'</span></p>'+
+                                '</div>'+
+                                '</li>'
+                }
+                $("#doctor-team").html(doctor_team+doctor+'</ul></div>');
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+    /*//聚优惠
+    function juyouhui(hospital_id){
+        $.ajax({type: "post",
+            url: "http://api.dfhon.cn/v3/Hospital.json?action=GetHospitalProductList&pageSize=3&hospitalId="+hospital_id,
+            dataType: 'json',
+            success: function (result) {
+                console.log(result);
+                if(result.Data.length == 0){//测试遇到无聚优惠的医院，不继续执行下面代码
+                    return 0;
+                }
+                var juyouhui = '';
+                var juyouhui_item ="";
+                juyouhui +='<a href="public_jump.html#juyouhui='+hospital_id+'">' +
+                        '<p class="doc-item">' +
+                        '<img class="icon" src="/images/list.jpg">聚优惠' +
+                        '<span class="total-peo">' +
+                        '共'+result.RecordCount+'篇&nbsp;' +
+                        '<img class="arrow_right" src="/images/arrow_right.png">' +
+                        '</span>' +
+                        '</p></a>';
+                for(var i =0; i< 3 ; i++){
+                    juyouhui_item +=    '<div class="recommend_item" item-id="'+result.Data[i].ID+'">' +
+                            '<div class="item_pic">' +
+                            '<img src="'+result.Data[i].ImgUrl.split(",")[0]+'">' +
+                            '</div>' +
+                            '<div class="item_content">'+
+                            '<ul>' +
+                            '<li><span class="item_title">'+result.Data[i].Title+'</span></li>' +
+                            '<li><span class="item_hos">'+result.Data[i].HonSay+'</span></li>' +
+                            '<li><span class="item_hos">'+result.Data[i].HospitalName+'</span></li>' +
+                            '<li><span class="item_now_price">￥'+result.Data[i].PreferPrice+'</span><span class="item_price">￥'+result.Data[i].MarketPrice+'</span>' +
+                            '<span class="item_order">预约数<a>'+result.Data[i].OrderCount+'</a></span>' +
+                            '</li>' +
+                            '</ul>'+
+                            '</div>' +
+                            '</div>'
+                }
+                $("#juyouhui").html(juyouhui+juyouhui_item);
+                list_item_click();//聚优惠跳转到商品详情
+            },
+            error: function () {
+                alert("error");
+            }
+        })
+    }*/
+</script>
+<!--公用的一些js,如星星的计算，医院和医生的案例ajax等-->
+<script src="/js/public_new.js" type="text/javascript"></script>
+</html>

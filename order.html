@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <!--公用样式-->
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/public.css">
+    <!--order页面样式-->
+    <link rel="stylesheet" type="text/css" href="/css/style_new.css">
+    <title>下单</title>
+    <script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="/js/base/Main.js"></script>
+</head>
+<body>
+<div class="masking">
+    <div class="container_content" id="item_container">
+        <!--项目搜索条-->
+        <div class="project_select">
+            <div class="select_bar">
+                <img src="/images/select.png">
+                <input type="text" class="project_keyword" id="class_keyword" placeholder="请输入要查找的项目名关键字">
+            </div>
+        </div>
+        <div class="content_list" id="item_list">
+            <!--<div class="nav">热门</div>-->
+        </div>
+        <!--<div class="item" id="PlasticClass"></div>-->
+    </div>
+    <div class="container_content" id="hospital_container">
+        <!--医院搜索条-->
+        <div class="project_select">
+            <div class="select_bar">
+                <img src="/images/select.png">
+                <input type="text" class="project_keyword" id="project_keyword" placeholder="请输入要查找医院名关键字">
+            </div>
+        </div>
+        <div class="content_list" id="hospital_list">
+            <!--<div class="nav">热门</div>-->
+        </div>
+        <!--<div class="item" id="hospital_name"></div>-->
+    </div>
+</div>
+<div class="w-h" id="select_item" plastic_classid="">选&nbsp;择&nbsp;项&nbsp;目 :</div>
+<div class="w-h" id="select_hospital" hospital="">选&nbsp;择&nbsp;医&nbsp;院 :</div>
+<div class="w-h">
+    <span>客&nbsp;户&nbsp;姓&nbsp;名 : </span>
+    <input class="user_name" type="text" placeholder="请输入客户姓名" id="name">
+</div>
+<div class="w-h">
+    <span>客户手机号 : </span>
+    <input class="user_phone" type="number" placeholder="请输入客户手机号" id="telephone">
+</div>
+<div class="w-h" style="position: relative">
+    <span>期望到院时间</span>
+    <span id="show_time"></span>
+    <img class="time_icon" src="/images/select-down.png">
+    <input class="select_time" type="datetime-local" id="time">
+</div>
+<textarea placeholder="订单补充说明" id="beizhu"></textarea>
+<div class="footer_order">提交订单<img class="submit_load" src="/images/submit_load.png"></div>
+<!--<footer></footer>-->
+</body>
+<script src="js/footer.js"></script>
+<script>
+    var cookies_op = new cookies_op();
+    var userid = cookies_op.get("userid");
+    //var userid = 182359;
+    //alert(userid);
+    $("#select_item").click(function(){
+        $("#item_container").show();
+        $("#hospital_container").hide();
+        $(".masking").show();
+    });
+    $("#select_hospital").click(function(){
+        $("#hospital_container").show();
+        $("#item_container").hide();
+        $(".masking").show();
+    });
+    $(".masking").click(function(){
+        $(this).hide();
+    });
+    $("#item_container,#hospital_container").click(function(){
+        return false;
+    });
+    //项目搜索
+    var item_flag = false;
+    $("#item_container").change(function(){
+        var class_keyword = $("#class_keyword").val();
+        $("#item_list .nav").removeClass("select");
+        if(!item_flag){
+            item_flag  = true;
+            $.ajax({
+                type : "get",
+                url : "http://api.dfhon.cn/v3/Class.json?action=GetClassByKeyword&app_sdk=gds&app_version=1.0.0&app_terminal=pc&keyword="+class_keyword,
+                dataType : 'json',
+                cache: true,
+                success :function(result){
+                    item_flag = false;
+                    console.log(result);
+                    var project_right = '';
+                    for ( var i =0;i < result.Data.length ; i++){
+                        project_right += '<div class="hospital_nav" classid="'+result.Data[i].PlasticClassId+'">'+result.Data[i].ClassName+'</div>'
+                    }
+                    //$('#PlasticClass').html();
+                    $('#PlasticClass').remove();
+                    $('#item_container').append('<div class="item" id="PlasticClass">'+project_right+'</div>');
+                    $("#PlasticClass div").each(function(){
+                        $(this).click(function(){
+                            console.log($(this).html());
+                            var item_name = $(this).html();
+                            var plastic_classid = $(this).attr("classid");
+                            console.log(plastic_classid);
+                            $(this).addClass('select');
+                            $(this).siblings().removeClass('select');
+                            $("#select_item").html("选&nbsp;择&nbsp;项&nbsp;目 :&nbsp;"+item_name);
+                            $("#select_item").attr("plastic_classid",plastic_classid);
+                            $("#item_container").hide();
+                            $(".masking").hide();
+                        })
+                    })
+                },
+                error : function() {
+                    //alert("error");
+                    //show_public_mask("东方虹提醒","发生未知错误，请退出再试");
+                }
+            });
+        }
+
+    });
+    //项目选择
+    $.ajax({
+        type : "get",
+        url : "http://api.dfhon.cn/v3/class.json?action=GetAllClassToGDS&app_sdk=gds&app_version=1.0.0&app_terminal=pc",
+        dataType : 'json',
+        cache: false,
+        success :function(result){
+            console.log(result);
+            var project = '';
+            for( var i = 0; i < result.Data.length; i++){
+                project += '<div class="nav">'+result.Data[i].ClassName+'</div>'
+            }
+            $("#item_list").html(project);
+            choose_item(result);
+        },
+        error : function() {
+            //alert("error");
+        }
+    });
+    //具体项目选择
+    function choose_item(result){
+        $("#item_list .nav").each(function(){
+            $(this).click(function(){
+                var index = $(this).index();//获取当前点击的顺序
+                var project_right = "";
+                console.log(index);
+                $(this).addClass('select');
+                $(this).siblings().removeClass('select');
+                for( var i = 0; i < result.Data[index].SubClass.length; i++){
+                    project_right += '<div class="hospital_nav" classid="'+result.Data[index].SubClass[i].PlasticClassId+'">'+result.Data[index].SubClass[i].ClassName+'</div>'
+                    for (var x = 0 ; x < result.Data[index].SubClass[i].SubClass.length ; x++){
+                        project_right += '<div class="class_name" classid="'+result.Data[index].SubClass[i].SubClass[x].PlasticClassId+'">'+result.Data[index].SubClass[i].SubClass[x].ClassName+'</div>'
+                    }
+                }
+                //$("#PlasticClass").html(project_right);
+                $('#PlasticClass').remove();
+                $('#item_container').append('<div class="item" id="PlasticClass">'+project_right+'</div>');
+                $("#PlasticClass div").each(function(){
+                    $(this).click(function(){
+                        console.log($(this).html());
+                        var item_name = $(this).html();
+                        var plastic_classid = $(this).attr("classid");
+                        console.log(plastic_classid);
+                        $(this).addClass('select');
+                        $(this).siblings().removeClass('select');
+                        $("#select_item").html("选&nbsp;择&nbsp;项&nbsp;目 :&nbsp;"+item_name);
+                        $("#select_item").attr("plastic_classid",plastic_classid);
+                        $("#item_container").hide();
+                        $(".masking").hide();
+                    })
+                })
+            });
+        });
+    }
+    //医院名搜索
+    var select_flag = false;
+    $("#project_keyword").change(function(){
+        var select_content = $("#project_keyword").val();
+        $("#hospital_list .nav").each(function(){
+            $(this).removeClass("select")
+        });
+        if(!select_flag){
+            select_flag  = true;
+            $.ajax({
+                type : "get",
+                url : "http://api.dfhon.cn/v3/Hospital.json?action=FindHospital&app_sdk=gds&app_version=1.0.0&app_terminal=pc&name="+select_content+"&pageSize=1000",
+                dataType : 'json',
+                cache: true,
+                success :function(result){
+                    select_flag = false;
+                    console.log(result);
+                    var hospital = '';
+                    for ( var i =0;i < result.Data.length ; i++){
+                        hospital += '<div class="hospital_nav" hospital_id="'+result.Data[i].HospitalId+'">'+result.Data[i].HospitalName+'</div>'
+                    }
+                    $('#hospital_name').remove();
+                    $('#hospital_container').append('<div class="item" id="hospital_name">'+hospital+'</div>');
+                    $("#hospital_name .hospital_nav").each(function(){
+                        $(this).click(function(){
+                            $("#project_keyword").val("");
+                            $(this).addClass("select");
+                            $(this).siblings().each(function(){
+                                $(this).removeClass('select')
+                            });
+                            var hospital_name = $(this).html();
+                            var hospital_id = $(this).attr("hospital_id");
+                            $("#select_hospital").html("选&nbsp;择&nbsp;医&nbsp;院 :&nbsp;"+hospital_name);
+                            $("#select_hospital").attr("hospital",hospital_id);
+                            $("#hospital_container").hide();
+                            $(".masking").hide();
+                        });
+                    });
+                },
+                error : function() {
+                    //alert("error");
+                }
+            });
+        }
+
+    });
+
+    //初始化页面载入全国省份
+    $.ajax({
+        type : "get",
+        url : "http://api.dfhon.cn/v3/Class.json?action=GetMallProvince&app_sdk=gds&app_version=1.0.0&app_terminal=pc",
+        dataType : 'json',
+        cache: false,
+        success :function(result){
+            var province = '';
+            for ( var i =0;i < result.Data.length ; i++){
+                province += '<div class="nav">'+result.Data[i].Province+'</div>'
+            }
+            $('#hospital_list').html(province);
+            $("#hospital_list .nav").each(function(){
+                $(this).click(function(){
+                    //var index = $(this).index();//获取当前点击的顺序
+                    var province = $(this).html();
+                    $(this).addClass("select");
+                    $(this).siblings().each(function(){
+                        $(this).removeClass('select')
+                    });
+                    console.log(province);
+                    hospital_by_province(province);
+                });
+            });
+        },
+        error : function() {
+            //alert("error");
+        }
+    });
+    //通过省找医院名
+    function hospital_by_province(province){
+        $.ajax({
+            type : "get",
+            url : "http://api.dfhon.cn/v3/Hospital.json?action=FindHospital&creditLevel=1&app_sdk=gds&app_version=1.0.0&app_terminal=pc&province="+province+"&pageSize=1000",
+            dataType : 'json',
+            cache: true,
+            success :function(result){
+                console.log(this.url);
+                console.log(result);
+                var hospital = '';
+                for ( var i =0;i < result.Data.length ; i++){
+                    hospital += '<div class="hospital_nav" hospital_id="'+result.Data[i].HospitalId+'">'+result.Data[i].HospitalName+'</div>'
+                }
+//                $('#hospital_name').html(hospital);
+                $('#hospital_name').remove();
+                $('#hospital_container').append('<div class="item" id="hospital_name">'+hospital+'</div>');
+                $("#hospital_name .hospital_nav").each(function(){
+                    $(this).click(function(){
+                        var hospital_name = $(this).html();
+                        $(this).addClass("select");
+                        $(this).siblings().each(function(){
+                            $(this).removeClass('select')
+                        });
+                        $("#select_hospital").html("选&nbsp;择&nbsp;医&nbsp;院 :&nbsp;"+hospital_name);
+                        var hospital_id = $(this).attr("hospital_id");
+                        $("#select_hospital").attr("hospital",hospital_id);
+                        $("#hospital_container").hide();
+                        $(".masking").hide();
+                    });
+                });
+            },
+            error : function() {
+                //alert("error");
+            }
+        });
+    }
+
+
+    var order_flag = false;
+    //验证提交
+    $(".footer_order").click(function(){
+        if( order_flag ){return;}
+        order_flag = true;
+        submitForm();
+    });
+
+    var item_id,hospital_id,name,telephone,time,beizhu;
+    function beforeSubmit() {
+        item_id = $("#select_item").attr("plastic_classid");
+        hospital_id = $("#select_hospital").attr("hospital");
+        name = $("#name").val();//姓名
+        telephone = $("#telephone").val();//手机号
+        time = $("#time").val();//2016-8-5
+        time = time.replace("T"," ");
+        beizhu = $("#beizhu").val();
+        var now_time = Date.parse(new Date());//当前时间（时间戳）
+        var time_rep = time.replace(/\-/g, '/');//2016/10/5
+        var time_chou = Date.parse(time_rep);//选择的时间转时间戳格式
+        if( item_id == ""){
+            show_public_mask("东方虹提醒","请选择您需要的项目");
+            order_flag = false;
+            return false;
+        }
+        if( hospital_id == ""){
+            show_public_mask("东方虹提醒","请选择您青睐的医院");
+            order_flag = false;
+            return false;
+        }
+        if (name == "") {
+            show_public_mask("东方虹提醒","请输入您客户的姓名");
+            order_flag = false;
+            return false;
+        }
+        if ( telephone == "" || !validatePhoneNum(telephone)) {
+            show_public_mask("东方虹提醒","请输入您客户的手机号");
+            order_flag = false;
+            return false;
+        }
+        if ( time == "" || now_time >= time_chou) {
+            show_public_mask("东方虹提醒","选择的日期需大于当前时间");
+            order_flag = false;
+            return false;
+        }
+        return true;
+    }
+    //选择时间
+    $("#time").change(function(){
+        var show_time = $(this).val();
+        show_time = show_time.replace("T"," ");
+        $("#show_time").html(" : "+show_time);
+        $(".time_icon").attr("src","/images/select-down.png")
+    });
+    //信息确认成功准备提交
+    function submitForm() {
+        var isValidated = beforeSubmit();
+        if (isValidated) {
+            //$(".footer_order").text("订单提交中");
+            $(".submit_load").show();
+            add_order(item_id,hospital_id,userid,name,telephone,time,beizhu)
+        }
+    }
+    //    手机号正则验证
+    function validatePhoneNum(PhoneNum) {
+        var reg = /^((13)|(14)|(15)|(17)|(18))\d{9}$/;
+        return reg.test(PhoneNum);
+    }
+
+    //用户下单
+    function add_order(classId,hospitalId,userId,userName,mobile,ordertime,beizhu){
+        $.ajax({
+            type : "get",
+            url : "http://api.dfhon.cn/v1/Popularize.json?action=AddOrder&app_sdk=gds&app_version=1.0.0&app_terminal=pc&classId="+classId+"&hospitalId="+hospitalId+"&userId="+userId+"&userName="+userName+"&mobile="+mobile+"&orderTime="+ordertime+"&beizhu="+beizhu,
+            dataType : 'json',
+            cache: true,
+            success :function(result){
+                console.log(result);
+                if(result.Success){
+                    $(".footer_order").text(result.Msg);
+                    setTimeout("window.location.href = '/user/order_management.html'",1500);
+                }else{
+                    $(".submit_load").hide();
+                    show_public_mask("东方虹提醒",result.Msg);
+                    order_flag = false;
+                }
+            },
+            error : function() {
+                $(".submit_load").hide();
+                show_public_mask("东方虹提醒","未知错误，请稍后再试试吧");
+            }
+        });
+    }
+</script>
+</html>

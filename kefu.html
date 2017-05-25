@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=" initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/public.css">
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <title>东方虹客服</title>
+    <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="js/base/Main.js"></script>
+    <script src="js/footer.js"></script>
+</head>
+<body>
+<!--<footer></footer>-->
+<iframe name="iframe" class="iframe-content" src="http://www.dfhon.cn/kf/qianniu/index.html" width="100%"  frameborder="0" ></iframe>
+</body>
+<script>
+    var screen_height = $(window).height();
+//    var foot_height = $("footer").height();
+//    var iframe_height = screen_height-foot_height-1;
+    $(".iframe-content").css("height",screen_height);
+    $(".wkit-theme-custom .wkit-title ,.wkit-theme-custom .wkit-input-wrap button").css('background-color','#ff523c')
+</script>
+</html>
